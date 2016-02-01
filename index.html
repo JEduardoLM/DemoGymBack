@@ -1,0 +1,153 @@
+<!doctype html>
+<html data-ng-app="demoGym">
+    <head>
+        <meta charset="utf-8">
+        <title>Gym</title>
+        <!-- Bootstrap -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+        <!-- AngularJS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.1/angular.js"></script>
+        <script src="https://code.angularjs.org/1.5.0-rc.0/angular-route.min.js"></script>
+        <script src="https://code.angularjs.org/1.5.0-rc.1/angular-animate.js"></script>
+
+        <link rel="stylesheet" href="https://rawgit.com/esvit/ng-table/master/dist/ng-table.min.css">
+        <script src="https://rawgit.com/esvit/ng-table/master/dist/ng-table.min.js"></script>
+
+        <script src="https://code.angularjs.org/1.5.0-rc.2/angular-messages.js"></script>
+        <!-- jQuery-->
+        <script type="text/javascript" src="DemoGym/front/utils/jquery.js"></script>
+
+        <script type="text/javascript" src="DemoGym/front/shell/js/angularModule.js"></script>
+
+        <style>
+            .logoIcon{
+                background-size: cover;
+                background-repeat: no-repeat;
+                height: 24px;
+                width: 24px;
+            }
+
+            .btnEditIcon{
+                background: url(DemoGym/front/assets/icons/pencil.svg) !important;
+            }
+
+            .btnDeleteIcon{
+                background: url(DemoGym/front/assets/icons/delete.svg) !important;
+            }
+
+            html, body{
+                height: 100%;
+                width: 100%;
+            }
+
+            body{
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-color: dimgray;
+                background-image: url(DemoGym/front/assets/icons/ENFORMA%20LOGO%20CON%20LETRAS.svg);
+            }
+
+            input{
+                width: 200px !important;
+            }
+
+            img{
+                height: 64px;
+                width: 33%;
+                margin-top: 10px
+            }
+
+            p{
+                width: 100%;
+                margin-top: 20px
+            }
+
+            .container {
+                height: 100%;
+                width: auto;
+                //padding: 0;
+                display: table;
+                vertical-align: middle;
+            }
+
+            .vertical-center-row {
+                display: table-cell;
+                vertical-align: middle;
+            }
+
+            .divLogin{
+                height: 400px;
+                width: 500px;
+                padding-left: 30px;
+                padding-right: 30px;
+                border-style: outset;
+                background-color: rgba(238, 238, 238, 0.9);
+            }
+
+            .rigth-horizontal-align{
+                width: 100%;
+                display: table;
+                text-align: right;
+                margin-top: 10px;
+                margin-bottom: 8px;
+            }
+
+            td.container{
+                height: 36px !important;
+                display: table-cell;
+            }
+
+            .containerCentered {
+                display: flex;
+                justify-content: center;
+            }
+        </style>
+    </head>
+
+        <body data-ng-controller="loginCommand">
+        <div class="container">
+            <div class="vertical-center-row">
+                <div class="divLogin" data-ng-style="{'color': 'gary'}">
+                    <h2>ENFORMA</h2>
+                    Entrenamiento formalizado
+                    <br><br><br>
+                    <div class="container">
+                        <div class="containerCentered">
+                            <div>
+                                <table>
+                                    <tr>
+                                        <td dir="rtl" class="container">:Correo</td>
+                                        <td><input type="email" class="form-control input-sm" placeholder="example@something.com"></td>
+                                    </tr>
+                                    <tr>
+                                        <td dir="rtl" class="container">:Contraseña</td>
+                                        <td><input type="password" class="form-control input-sm" placeholder="password"></td>
+                                    </tr>
+                                </table>
+
+                        <div class="rigth-horizontal-align">
+                            <button class="btn btn-success" data-ng-click="loginHandler()">Ingresar</button>
+                        </div>
+                            </div>
+                        </div>
+
+                        <div ng-style="{'background-color': 'black', height: '1px'}"></div>
+                        <img src="DemoGym/front/assets/icons/dumbbell.svg">
+                        <img src="DemoGym/front/assets/icons/nutrition.svg">
+                        <img src="DemoGym/front/assets/icons/seguimiento.svg">
+                        <p>Administra las rutinas de tus socios, lleva el seguimiento de sus avances, y conectate con ellos aún fuera del gimnacio.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+        </script>
+    </body>
+</html>

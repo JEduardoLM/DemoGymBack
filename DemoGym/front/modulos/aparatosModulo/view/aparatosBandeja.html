@@ -1,0 +1,211 @@
+<!doctype html>
+<html data-ng-app="demoGym">
+    <head>
+        <meta charset="utf-8">
+        <title>Configuración</title>
+        <!-- Bootstrap -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+        <!-- AngularJS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.1/angular.js"></script>
+        <script src="https://code.angularjs.org/1.5.0-rc.0/angular-route.min.js"></script>
+        <script src="https://code.angularjs.org/1.5.0-rc.1/angular-animate.js"></script>
+        <!-- jQuery-->
+        <script type="text/javascript" src="/DemoGym/front/utils/jquery.js"></script>
+
+        <script type="text/javascript" src="/DemoGym/front/shell/js/angularModule.js"></script>
+        <script type="text/javascript" src="/front/modulos/aparatosModulo/js/AparatoBL.js"></script>
+
+        <style>
+            body{
+                padding-top: 56px;
+                padding-left: 5px;
+                background-color: dimgray;
+            }
+
+            div{
+                /*border-style: solid;*/
+                border-radius: 4px;
+            }
+
+            .logoIcon{
+                background-size: contain;
+                background-repeat: no-repeat;
+                height: 36px;
+                width: 36px;
+            }
+
+            .btnPlusIcon{
+                background-image: url(/DemoGym/front/assets/icons/plus.svg) !important;
+                background-color: rgba(0,0,0,0);
+            }
+
+            .btnEditIcon{
+                background-image: url(/DemoGym/front/assets/icons/pencil.svg) !important;
+                background-color: rgba(0,0,0,0);
+            }
+
+            .btnConsultIcon{
+                background-image: url(/DemoGym/front/assets/icons/magnify.svg) !important;
+                background-color: rgba(0,0,0,0);
+            }
+
+            .logoIconBoulet{
+                background-size: contain;
+                background-repeat: no-repeat;
+                height: 24px;
+                width: 24px;
+                background-color: rgba(235,235,235,1);
+            }
+
+            .btnDeleteIcon{
+                background-image: url(/DemoGym/front/assets/icons/delete.svg) !important;
+                background-color: rgba(230,230,230,1);
+            }
+
+            .inputTextFilter{
+                width: 300px;
+            }
+
+
+            .transformable {
+                -webkit-transition: height 100ms linear;
+                -moz-transition: height 100ms linear;
+                -o-transition: height 100ms linear;
+                -ms-transition: height 100ms linear;
+                transition: height 100ms linear;
+                background-color: lightgoldenrodyellow;
+                width: 720px;
+            }
+
+            .small {
+                height:0px;
+                /*pacity: 0;*/
+            }
+            .big {
+                height:74px;
+                /*opacity: 1;*/
+            }
+
+            .divGrid{
+                background-color: lightgray;
+            }
+            .smallGrid{
+                height: calc(100% - 160px);
+            }
+            .bigGrid{
+                height: calc(100% - 80px);
+            }
+
+            .td-centered{
+                text-align: center;
+            }
+
+            .tdBoulet{
+                text-align: center;
+                display: flex;
+                justify-content: center;
+            }
+
+            .divBoulet{
+                height: 24px;
+                width: 24px;
+                border-radius: 12px;
+            }
+            .divBoulet-On{
+                background-color: mediumseagreen;
+            }
+            .divBoulet-Off{
+                background-color: orangered;
+            }
+
+            .td-width-md{
+                width: 80px;
+            }
+
+            .divMain{
+                height: calc(100% - 6px);
+                width: 100%;
+            }
+
+            /* Alta aparato */
+            .div-form{
+                padding-top: 10px;
+            }
+
+            .div-space-right{
+                margin-right: 20px;
+            }
+
+            .teatarea-no-resize{
+                resize: none;
+            }
+            /* fin alta aparato*/
+        </style>
+    </head>
+
+    <body>
+        <div class="divMain" data-ng-controller="AparatosCommand">
+            <h4 data-ng-style="{'font-weight': 'bold'}">Aparatos</h4>
+            <div>
+                <button class="btn logoIcon btnPlusIcon" data-ng-click="isSmall = !isSmall"></button>
+                <button class="btn logoIcon btnEditIcon" data-ng-click="editAparatoHandler()"></button>
+                <button class="btn logoIcon btnConsultIcon"></button>
+
+                <input class="inputTextFilter" type="text" placeholder="Filtrar por nombre y descripcion">
+            </div>
+
+            <!--div class="transformable" ng-class="{'small':!isSmall, 'big':isSmall}" data-ng-include src=" '/DemoGym/front/modulos/aparatosModulo/view/altaAparatos.html' "></div-->
+            <div class="transformable" ng-class="{'small':!isSmall, 'big':isSmall}">
+                <div class="div-form" data-ng-show="isSmall" novalidate>
+                    <form class="form-inline" role="form" name="aparatoForm">
+                        <div class="form-group div-space-right">
+                            <label for="name">Nombre:</label>
+                            <input type="text" class="form-control input-sm" id="name" data-ng-model="name">
+                        </div>
+
+                        <div class="form-group div-space-right">
+                            <label for="descrip">Descripción:</label>
+                            <textarea type="text" class="form-control teatarea-no-resize" id="descrip" data-ng-model="descripcion"></textarea>
+                        </div>
+
+                        <div class="checkbox div-space-right">
+                            <label><input type="checkbox" data-ng-model="status"> Estatus </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" data-ng-click="saveAparato()">Guardar</button>
+                    </form>
+                </div>
+            </div>
+
+
+
+            <div class="divGrid" data-ng-class="{'smallGrid':isSmall, 'bigGrid':!isSmall}">
+                <table ng-table="usersTable" class="table table-striped table-condensed">
+                   <tr ng-repeat="aparato in aAparato" data-ng-class="{'info':$index == selectedRow}" data-ng-click="setClickedRow($index, aparato)">
+                       <td data-title="'Estatus'" class="tdBoulet">
+                           <div class="divBoulet" data-ng-class="{'divBoulet-On':{{aparato.estatus=='1'}}, 'divBoulet-Off':{{aparato.estatus=='0'}}}"></div>
+                       </td>
+                       <td data-title="'Nombre'" class="td-centered">
+                           {{aparato.Nombre}}
+                       </td>
+                       <td data-title="'Descripción'" class="td-centered">
+                           {{aparato.Descripcion}}
+                       </td>
+                       <td class="td-width-md">
+                           <button data-ng-click="editAparato(aparato)" type="button" class="btn logoIconBoulet btnEditIcon"></button>
+                       </td>
+                   </tr>
+                </table>
+            </div>
+        </div>
+
+        <script>
+
+        </script>
+    </body>
+</html>
