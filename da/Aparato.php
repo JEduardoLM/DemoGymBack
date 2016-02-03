@@ -3,8 +3,10 @@
 	// JELM
 	// 26/01/2016
 	// Se define la clase aparato, utilizada para acceder a la base de datos y realizar operaciones sobre la tabla aparato
+    //
 
 	require('conexion.php'); //Se requiere el archivo conexión.php, para conectarse a la base de datos
+
 
 class Aparato{
 
