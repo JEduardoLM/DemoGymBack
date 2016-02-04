@@ -124,14 +124,14 @@ class UsuarioEnforma{
 			}
 			else{
 				$response["success"]=0;
-				$response["message"]='No se encontró aparato alguno con el nombre indicado';
+				$response["message"]='El correo indicado no se encuentra registrado';
 			}
 
 		}
 		else
 			{
 				$response["success"]=0;
-				$response["message"]='No se encontró aparato alguno con el nombre indicado';
+				$response["message"]='El correo indicado no se encuentra registrado';
 			}
 		}
 		else
@@ -196,10 +196,10 @@ class UsuarioEnforma{
 
 }
 
-	$UE=new UsuarioEnforma();
+	//$UE=new UsuarioEnforma();
 	//echo json_encode($UE->getUsuarioEnformaByID(0));
 	//echo json_encode($UE->buscarUsuarioEnformaCorreoPassword("PRUEBA311","PRUEBA"));
-	echo json_encode($UE->addUsuarioEnforma('MARTHA PHP ', 'Romero Luna','MT.RL@correo.com','face', NULL));
+	//echo json_encode($UE->addUsuarioEnforma('MARTHA PHP ', 'Romero Luna','MT.RL@correo.com','face', NULL));
 
 
 
