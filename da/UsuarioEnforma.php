@@ -159,8 +159,6 @@ class UsuarioEnforma{
 			$sql->bind_param("ssssss",$nombre,$apellido,$correo, $facebook, $password,$codigo);
 			//$sql= "CALL nuevoUsuario($nombre,$apellido,$correo, $facebook, $password,@codigo)";
 
-			echo '***********************'.$codigo;
-			echo '***************************************************************************************************************************';
 			if ($sql->execute()){
 
 			$sql->close();
@@ -168,8 +166,7 @@ class UsuarioEnforma{
 			$resp = mysqli_fetch_array($consulta2);
 			print_r($resp[0]);
 
-			echo '***********************'.$codigo;
-			echo '***************************************************************************************************************************';
+
 
 			//if($result = mysqli_query($conexion, $sql)){
 
