@@ -106,12 +106,14 @@ class UsuarioEnforma{
 					} elseif ($contrasena!=$password){
 						$bandera=2;
 					}
-					array_push($response["usuarios"], $item);
+
 				}
 
 				if ($bandera==0){
-					$response["success"]=1;
+                    array_push($response["usuarios"], $item);
+                    $response["success"]=1;
 					$response["message"]='Consulta exitosa';
+
 				}
 				if ($bandera==1){
 					$response["success"]=0;

@@ -18,9 +18,9 @@
 	$passwordBl= $data["Password"];
 	$estatusBl= $data["Estatus"];
 
-	$metodoBl='logueoCorreoPassword';
-	$correoBl='PRUEBA33889';
-	$passwordBl='TEST';
+	//$metodoBl='logueoCorreoPassword';
+	//$correoBl='P@P.COM';
+	//$passwordBl='1234';
 
 		function validarTextoNulo($Texto,$Valor){
 		if ($Texto!==NULL){
