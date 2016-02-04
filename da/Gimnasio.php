@@ -38,8 +38,8 @@ class Gimnasio{
 	}
 }
 
- $G = new Gimnasio();
- $Gyms=$G->getGimnasios(0);
- echo $Gyms;
+// $G = new Gimnasio();
+// $Gyms=$G->getGimnasios(0);
+// echo $Gyms;
 
 ?>
