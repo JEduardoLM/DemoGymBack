@@ -66,7 +66,7 @@ class UsuarioGym{
 
     //**********************************************************************
 
-    	function getUsuarioGymByIDU_IDGym($idUsuario,$idGym){ // Esta función nos regresa todos los registros de usuarioGym, que correspondan a un usuario y gimnasio especifico
+    function getUsuarioGymByIDU_IDGym($idUsuario,$idGym){ // Esta función nos regresa todos los registros de usuarioGym, que correspondan a un usuario y gimnasio especifico
 		//Creamos la conexión con la función anterior
 		$conexion = obtenerConexion();
 
@@ -136,10 +136,10 @@ class UsuarioGym{
 
 }
 
- $UG = new UsuarioGym();
- $UGs=$UG->getUsuarioGymByIDU_IDGym(3,5);
+// $UG = new UsuarioGym();
+// $UGs=$UG->getUsuarioGymByIDU_IDGym(3,5);
 
- echo json_encode ($UGs);
+// echo json_encode ($UGs);
 
 
 ?>

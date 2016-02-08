@@ -67,10 +67,9 @@ class Socio{
 
 }
 
- $UG = new Socio();
- $UGs=$UG->getSocioByIdUsuarioIdGym(2,2);
-
- echo json_encode ($UGs);
+// $UG = new Socio();
+// $UGs=$UG->getSocioByIdUsuarioIdGym(2,2);
+// echo json_encode ($UGs);
 
 
 ?>
