@@ -20,7 +20,7 @@ class Socio{
                 if($result!=null){
                     if ($result->num_rows>0){
 
-                        $response["usuarioGyms"] = array();
+                        $response["socios"] = array();
                         while($row = mysqli_fetch_array($result))
                         {
                             $item = array();
@@ -31,7 +31,7 @@ class Socio{
                             $item["Estatus"]=$row["Estatus"];
                             $item["IdSucursal"]=$row["sucursal"];
 
-                            array_push($response["usuarioGyms"], $item);
+                            array_push($response["socios"], $item);
                         }
                         $response["success"]=1;
                         $response["message"]='Consulta exitosa';

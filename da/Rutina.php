@@ -18,20 +18,20 @@ class Rutina{
                 if($result!=null){
                     if ($result->num_rows>0){
 
-                        $response["usuarioGyms"] = array();
+                        $response["Rutina"] = array();
                         while($row = mysqli_fetch_array($result))
                         {
                             $item = array();
                             $item["Id"]=$row["R_ID"];
-                            $item["IdUsuario"]=$row["Nombre"];
-                            $item["IdGym"]=$row["FechaInicio"];
-                            $item["IdSocio"]=$row["FechaFin"];
+                            $item["Nombre"]=$row["Nombre"];
+                            $item["FechaInicio"]=$row["FechaInicio"];
+                            $item["FechaFin"]=$row["FechaFin"];
                             $item["Estatus"]=$row["Estatus"];
-                            $item["IdSucursal"]=$row["Objetivo"];
-                            $item["IdSucursal"]=$row["id_Socio"];
-                            $item["IdSucursal"]=$row["id_Instructor"];
+                            $item["Objetivo"]=$row["Objetivo"];
+                            $item["id_Socio"]=$row["id_Socio"];
+                            $item["id_Instructor"]=$row["id_Instructor"];
 
-                            array_push($response["usuarioGyms"], $item);
+                            array_push($response["Rutina"], $item);
                         }
                         $response["success"]=1;
                         $response["message"]='Consulta exitosa';
@@ -67,9 +67,9 @@ class Rutina{
 
 }
 
- $Rutina = new Rutina();
- $RutinaR=$Rutina->getRutinaByIdSocio(2);
- echo json_encode ($RutinaR);
+ //$Rutina = new Rutina();
+ //$RutinaR=$Rutina->getRutinaByIdSocio(29);
+ //echo json_encode ($RutinaR);
 
 
 ?>

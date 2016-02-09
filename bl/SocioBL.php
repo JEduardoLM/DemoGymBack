@@ -12,18 +12,24 @@
 
 	require('../da/UsuarioGym.php'); //Se requiere el archivo de acceso a la base de datos
     require('../da/Socio.php'); //Se requiere el archivo de acceso a la base de datos
+    require('../da/Rutina.php'); //Se requiere el archivo de acceso a la base de datos
+    require('../da/Subrutina.php'); //Se requiere el archivo de acceso a la base de datos
 
 
 	//Extraemos la información del método POST, y lo asignamos a diferentes variables
 	$metodoBl = $data["metodo"];
 	$idUsuarioBl = $data["idUsuario"];
     $idGimnasioBl = $data["idGimnasio"];
+    $idSocioBl = $data["idSocio"];
+    $idRutinaBl = $data["idRutina"];
 
 
 
-	// $metodoBl="obtenerSocioByIdUIdG";
-    // $idUsuarioBl=6;
-    // $idGimnasioBl=1;
+	//$metodoBl="ObtenerSubrutinasByIdU_IdGym";
+     //$idUsuarioBl=1;
+     //$idGimnasioBl=2;
+    //$idSocioBl=2;
+   //$idRutinaBl=3;
 
 	function getUsuarioGymByIDU($idUsuario){
 
@@ -84,6 +90,84 @@
         return $response;
     }
 
+    function getRutinaBySocio($idSocio){
+        if ($idSocio!=NULL){  //Validamos que el id envíado sea diferente de NULO
+
+            if (is_numeric($idSocio)){
+                $rutina = new Rutina();
+                $response= $rutina->getRutinaByIdSocio($idSocio);
+
+            }
+            else
+            {
+            $response["success"]=0;
+			$response["message"]='El id del socio debe ser un dato numérico';
+            }
+        }
+        else
+        {
+            $response["success"]=0;
+			$response["message"]='El id del socio debe ser diferente de NULO';
+        }
+        return $response;
+    }
+
+    function getSubrutinasByRutina($idRutina){
+        if ($idRutina!=NULL){  //Validamos que el id envíado sea diferente de NULO
+            if (is_numeric($idRutina)){
+                $subrutina = new subrutina();
+                $response= $subrutina->getsubrutinaByIdRutina($idRutina);
+
+            }
+            else
+            {
+                $response["success"]=0;
+                $response["message"]='El id de la rutina debe ser un dato numérico';
+            }
+        }
+        else
+        {
+            $response["success"]=0;
+			$response["message"]='El id de la rutina debe ser diferente de NULO';
+        }
+        return $response;
+    }
+
+    function getSubrutinasByIdUsuarioIdGym($idUsuario, $idGym)
+    {
+
+        if ($idUsuario!=NULL){  //Validamos que el id envíado sea diferente de NULO
+            if ($idGym!=NULL){
+                if (is_numeric($idUsuario)){
+                    if (is_numeric($idGym)){
+                        $subrutina = new Subrutina();
+                        $response= $subrutina->getSubRutinaByIdIdUsuarioIdGym($idUsuario,$idGym);
+                    }
+                    else
+                    {
+                        $response["success"]=0;
+                        $response["message"]='El id del gimnasio debe ser un dato numérico';
+                    }
+                }
+                else
+                {
+                    $response["success"]=0;
+                    $response["message"]='El id del usuario debe ser un dato numérico';
+                }
+            }
+            else{
+                $response["success"]=0;
+			     $response["message"]='El id del gimnasio debe ser diferente de NULO';
+            }
+
+        }
+        else
+        {
+            $response["success"]=0;
+			$response["message"]='El id del usuario debe ser diferente de NULO';
+        }
+        return $response;
+    }
 
 	switch ($metodoBl) {
 		case "obtenerGimnasiosDeUsuario": // Mandar cero, para obtener todos los aparatos, o el id del aparatado especifico.
@@ -91,6 +175,15 @@
 		break;
 		case "obtenerSocioByIdUIdG":
             $response=getSocioByIdUIdG($idUsuarioBl, $idGimnasioBl);
+		break;
+        case "obtenerRutinaBySocio":
+            $response=getRutinaBySocio($idSocioBl);
+		break;
+        case "ObtenerSubrutinasByRutina":
+            $response=getSubrutinasByRutina($idRutinaBl);
+		break;
+        case "ObtenerSubrutinasByIdU_IdGym":
+            $response=getSubrutinasByIdUsuarioIdGym($idUsuarioBl, $idGimnasioBl);
 		break;
 		default:
 		{
