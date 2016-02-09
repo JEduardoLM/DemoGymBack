@@ -11,6 +11,8 @@
 	$data = json_decode(file_get_contents('php://input'), true);  //Recibimos un objeto json por medio del método POST, y lo decodificamos
 
 	require('../da/UsuarioGym.php'); //Se requiere el archivo de acceso a la base de datos
+    require('../da/Socio.php'); //Se requiere el archivo de acceso a la base de datos
+
 
 	//Extraemos la información del método POST, y lo asignamos a diferentes variables
 	$metodoBl = $data["metodo"];
@@ -19,8 +21,9 @@
 
 
 
-	//$metodoBl="obtenerGimnasiosDeUsuario";
-    //$idUsuarioBl=-92;
+	// $metodoBl="obtenerSocioByIdUIdG";
+    // $idUsuarioBl=6;
+    // $idGimnasioBl=1;
 
 	function getUsuarioGymByIDU($idUsuario){
 
@@ -46,19 +49,48 @@
 
     }
 
+    function getSocioByIdUIdG($idUsuario,$idGym){
+
+        if ($idUsuario!=NULL){  //Validamos que el id envíado sea diferente de NULO
+            if ($idGym!=NULL){
+                if (is_numeric($idUsuario)){
+                    if (is_numeric($idGym)){
+                        $socio = new Socio();
+                        $response= $socio->getSocioByIdUsuarioIdGym($idUsuario,$idGym);
+                    }
+                    else
+                    {
+                        $response["success"]=0;
+                        $response["message"]='El id del gimnasio debe ser un dato numérico';
+                    }
+                }
+                else
+                {
+                    $response["success"]=0;
+                    $response["message"]='El id del usuario debe ser un dato numérico';
+                }
+            }
+            else{
+                $response["success"]=0;
+			     $response["message"]='El id del gimnasio debe ser diferente de NULO';
+            }
+
+        }
+        else
+        {
+            $response["success"]=0;
+			$response["message"]='El id del usuario debe ser diferente de NULO';
+        }
+        return $response;
+    }
 
 
 	switch ($metodoBl) {
 		case "obtenerGimnasiosDeUsuario": // Mandar cero, para obtener todos los aparatos, o el id del aparatado especifico.
 			$response=getUsuarioGymByIDU($idUsuarioBl);
 		break;
-		case "saveAparato":
-			if ($idAparatoBl==NULL or $idAparatoBl==0){
-				$response=addAparatoBl($nombreBl,$descripcionBl);// Método para agregar un nuevo aparato, aquí el ID no es necesario
-			}
-			else{
-				$response=updateAparatoByIDBl($idAparatoBl,$nombreBl,$descripcionBl,$estatusBl);// Método para agregar un nuevo aparato, aquí el ID no es necesario
-			}
+		case "obtenerSocioByIdUIdG":
+            $response=getSocioByIdUIdG($idUsuarioBl, $idGimnasioBl);
 		break;
 		default:
 		{

@@ -1,7 +1,7 @@
 <?php
 require_once('conexion.php');
 
-class Socio{
+class Rutina{
 
 	function getRutinaByIdSocio($idSocio){ // Esta función nos regresa la rutina activa de un socio especifico
 		//Creamos la conexión con la función anterior
@@ -11,8 +11,7 @@ class Socio{
 
 		if ($idSocio!=0)
 		{
-			$sql= "SELECT UG_Id, IdUsuario, IdGym, So_Id, socio.Estatus, id_Sucursal as sucursal  FROM usuariogimnasio join socio on UG_Id=Id_UsuarioGym
-            where IdUsuario='$idUsuario' and IdGym='$idGym'";
+			$sql= "SELECT  R_ID, Nombre, FechaInicio, FechaFin, Estatus, Objetivo, id_Socio, id_Instructor FROM rutina where Estatus=1  and id_Socio=$idSocio order  by FechaInicio desc  LIMIT 1";
 
             if($result = mysqli_query($conexion, $sql))
             {
@@ -23,12 +22,14 @@ class Socio{
                         while($row = mysqli_fetch_array($result))
                         {
                             $item = array();
-                            $item["Id"]=$row["UG_Id"];
-                            $item["IdUsuario"]=$row["IdUsuario"];
-                            $item["IdGym"]=$row["IdGym"];
-                            $item["IdSocio"]=$row["So_Id"];
+                            $item["Id"]=$row["R_ID"];
+                            $item["IdUsuario"]=$row["Nombre"];
+                            $item["IdGym"]=$row["FechaInicio"];
+                            $item["IdSocio"]=$row["FechaFin"];
                             $item["Estatus"]=$row["Estatus"];
-                            $item["IdSucursal"]=$row["sucursal"];
+                            $item["IdSucursal"]=$row["Objetivo"];
+                            $item["IdSucursal"]=$row["id_Socio"];
+                            $item["IdSucursal"]=$row["id_Instructor"];
 
                             array_push($response["usuarioGyms"], $item);
                         }
@@ -37,14 +38,14 @@ class Socio{
                     }
                     else{
                         $response["success"]=0;
-                        $response["message"]='No existe un socio registrado del usuario en el gimnasio indicado';
+                        $response["message"]='El socio no cuenta con una rutina activa';
                     }
 
                 }
                 else
                     {
                         $response["success"]=0;
-                        $response["message"]='No existe un socio registrado del usuario en el gimnasio indicado';
+                        $response["message"]='El socio no cuenta con una rutina activa';
                     }
             }
             else
@@ -66,9 +67,9 @@ class Socio{
 
 }
 
-// $UG = new Socio();
-// $UGs=$UG->getSocioByIdUsuarioIdGym(2,2);
-// echo json_encode ($UGs);
+ $Rutina = new Rutina();
+ $RutinaR=$Rutina->getRutinaByIdSocio(2);
+ echo json_encode ($RutinaR);
 
 
 ?>
