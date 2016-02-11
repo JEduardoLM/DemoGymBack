@@ -150,6 +150,146 @@ class UsuarioEnforma{
 	//******************************************************************************************************************************************************
 	//******************************************************************************************************************************************************
 
+    	function buscarUsuarioEnformaCorreo($correo){
+
+		//Creamos la conexión a la base de datos
+		$conexion = obtenerConexion();
+		mysqli_set_charset($conexion, "utf8"); //Formato de datos utf8
+
+
+		$sql="select * from UsuarioEnforma where Correo='$correo'";
+
+		if($result = mysqli_query($conexion, $sql))
+		{
+		if($result!=null){
+			if ($result->num_rows==1){
+				$response["usuarios"] = array();
+				$bandera=0;
+				while($row = mysqli_fetch_array($result))
+				{
+					$item = array();
+					$item["Id"]=$row["Id"];
+					$item["CodigoEnforma"]=$row["CodigoEnforma"];
+					$item["Nombre"]=$row["Nombre"];
+					$item["Apellidos"]=$row["Apellidos"];
+					$item["Correo"]=$row["Correo"];
+					$item["idFacebook"]=$row["IdFacebook"];
+					$contrasena=$row["Password"];
+					$item["Estatus"]=$row["Estatus"];
+					if ($item["Estatus"]==0){
+						$bandera=1;
+					}
+
+				}
+
+				if ($bandera==0){
+                    array_push($response["usuarios"], $item);
+                    $response["success"]=1;
+					$response["message"]='Consulta exitosa';
+
+				}
+				if ($bandera==1){
+					$response["success"]=0;
+					$response["message"]='El usuario ENFORMA con el correo '.$correo.' no se encuentra activo';
+				}
+
+			}
+			else{
+				$response["success"]=0;
+				$response["message"]='El correo indicado no se encuentra registrado';
+			}
+
+		}
+		else
+			{
+				$response["success"]=0;
+				$response["message"]='El correo indicado no se encuentra registrado';
+			}
+		}
+		else
+		{
+			$response["success"]=0;
+			$response["message"]='Se presento un error al ejecutar la consulta';
+		}
+
+		desconectar($conexion); //desconectamos la base de datos
+		return  ($response); //devolvemos el array
+	}
+
+	//******************************************************************************************************************************************************
+	//******************************************************************************************************************************************************
+	//******************************************************************************************************************************************************
+
+    function buscarUsuarioEnformaFacebook($facebook){
+
+		//Creamos la conexión a la base de datos
+		$conexion = obtenerConexion();
+		mysqli_set_charset($conexion, "utf8"); //Formato de datos utf8
+
+
+		$sql="select * from UsuarioEnforma where IdFacebook='$facebook'";
+
+		if($result = mysqli_query($conexion, $sql))
+		{
+		if($result!=null){
+			if ($result->num_rows==1){
+				$response["usuarios"] = array();
+				$bandera=0;
+				while($row = mysqli_fetch_array($result))
+				{
+					$item = array();
+					$item["Id"]=$row["Id"];
+					$item["CodigoEnforma"]=$row["CodigoEnforma"];
+					$item["Nombre"]=$row["Nombre"];
+					$item["Apellidos"]=$row["Apellidos"];
+					$item["Correo"]=$row["Correo"];
+					$item["idFacebook"]=$row["IdFacebook"];
+					$contrasena=$row["Password"];
+					$item["Estatus"]=$row["Estatus"];
+					if ($item["Estatus"]==0){
+						$bandera=1;
+					}
+
+				}
+
+				if ($bandera==0){
+                    array_push($response["usuarios"], $item);
+                    $response["success"]=1;
+					$response["message"]='Consulta exitosa';
+
+				}
+				if ($bandera==1){
+					$response["success"]=0;
+					$response["message"]='El usuario ENFORMA con el id de facebook: '.$facebook.' no se encuentra activo';
+				}
+
+			}
+			else{
+				$response["success"]=0;
+				$response["message"]='El id de facebook indicado no se encuentra registrado';
+			}
+
+		}
+		else
+			{
+				$response["success"]=0;
+				$response["message"]='El id de facebook indicado no se encuentra registrado';
+			}
+		}
+		else
+		{
+			$response["success"]=0;
+			$response["message"]='Se presento un error al ejecutar la consulta';
+		}
+
+		desconectar($conexion); //desconectamos la base de datos
+		return  ($response); //devolvemos el array
+	}
+
+	//******************************************************************************************************************************************************
+	//******************************************************************************************************************************************************
+	//******************************************************************************************************************************************************
+
 		function addUsuarioEnforma($nombre,$apellido,$correo, $facebook, $password)
 	{
 		//Creamos la conexión con la función anterior
@@ -198,9 +338,10 @@ class UsuarioEnforma{
 
 }
 
-	//$UE=new UsuarioEnforma();
+	$UE=new UsuarioEnforma();
 	//echo json_encode($UE->getUsuarioEnformaByID(0));
 	//echo json_encode($UE->buscarUsuarioEnformaCorreoPassword("PRUEBA311","PRUEBA"));
+    //echo json_encode($UE->buscarUsuarioEnformaFacebook("2387320587iutyoiuy387@facebook.com14"));
 	//echo json_encode($UE->addUsuarioEnforma('MARTHA PHP ', 'Romero Luna','MT.RL@correo.com','face', NULL));
 
 

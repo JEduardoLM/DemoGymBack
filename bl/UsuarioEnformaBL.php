@@ -22,7 +22,7 @@
 	//$correoBl='P@P.COM';
 	//$passwordBl='1234';
 
-		function validarTextoNulo($Texto,$Valor){
+    function validarTextoNulo($Texto,$Valor){
 		if ($Texto!==NULL){
 			if (trim($Texto)!=''){
 				$Rvalidacion["success"]=1;
@@ -60,7 +60,12 @@
 		case "logueoCorreoPassword": // Mandar cero, para obtener todos los aparatos, o el id del aparatado especifico.
 			$response=logueoCorreoPassword($correoBl,$passwordBl);
 		break;
-
+		case "logueoCorreo": // Mandar cero, para obtener todos los aparatos, o el id del aparatado especifico.
+			$response=logueoCorreoPassword($correoBl);
+		break;
+        case "logueoFacebook": // Mandar cero, para obtener todos los aparatos, o el id del aparatado especifico.
+			$response=logueoCorreoPassword($idFacebookBl);
+		break;
 		default:
 		{
 			$response["success"]=0;
