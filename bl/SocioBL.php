@@ -25,11 +25,11 @@
 
 
 
-	//$metodoBl="ObtenerSubrutinasByIdU_IdGym";
-     //$idUsuarioBl=1;
-     //$idGimnasioBl=2;
-    //$idSocioBl=2;
-   //$idRutinaBl=3;
+	// $metodoBl="obtenerGimnasiosDeUsuario";
+    // $idUsuarioBl=3;
+    // $idGimnasioBl=2;
+    // $idSocioBl=2;
+   // $idRutinaBl=3;
 
 	function getUsuarioGymByIDU($idUsuario){
 

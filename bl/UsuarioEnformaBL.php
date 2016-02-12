@@ -11,16 +11,19 @@
 	//Extraemos la información del método POST, y lo asignamos a diferentes variables
 	$metodoBl = $data["metodo"];
 	$CodigoEnformaBl= $data["CodigoEnforma"];
-	$NombreBl= $data["Nombre"];
+	$nombreBl= $data["Nombre"];
 	$apellidosBl= $data["Apellidos"];
 	$correoBl= $data["Correo"];
 	$idFacebookBl= $data["IdFacebook"];
 	$passwordBl= $data["Password"];
 	$estatusBl= $data["Estatus"];
 
-	//$metodoBl='logueoCorreoPassword';
-	//$correoBl='P@P.COM';
-	//$passwordBl='1234';
+	// $metodoBl='RegistroDeUsuario';
+    // $correoBl='NuevoCorreo8@correo.com';
+    // $idFacebookBl='';
+    // $nombreBl='Usuario de prueba BL';
+    // $apellidosBl='LM TEST Bl';
+	// $passwordBl='correo';
 
     function validarTextoNulo($Texto,$Valor){
 		if ($Texto!==NULL){
@@ -41,11 +44,12 @@
 
 
 	function logueoCorreoPassword($correo,$password){
-
 		$correoValidado= validarTextoNulo($correo, "El correo del usuario");
 		if ($correoValidado["success"]==1){
 			$passwordValidado= validarTextoNulo($password, "El password del usuario");
 			if ($passwordValidado["success"]==1){
+                $salt = '$EnfoArt$/';
+                $password = sha1(md5($salt . $password));
 				$usuario = new UsuarioEnforma();
 				$respuesta= $usuario->buscarUsuarioEnformaCorreoPassword($correo,$password);
 			}
@@ -55,16 +59,108 @@
 		return $respuesta;
 	}
 
+//***********************************************************************************
+
+	function logueoCorreo($correo){
+		$correoValidado= validarTextoNulo($correo, "El correo del usuario");
+		if ($correoValidado["success"]==1){
+				$usuario = new UsuarioEnforma();
+				$respuesta= $usuario->buscarUsuarioEnformaCorreo($correo);
+		}
+		else{$respuesta=$correoValidado;}
+		return $respuesta;
+	}
+
+//***********************************************************************************
+
+	function logueoFacebook($facebook){
+		$facebookValidado= validarTextoNulo($facebook, "El id facebook del usuario");
+		if ($facebookValidado["success"]==1){
+				$usuario = new UsuarioEnforma();
+				$respuesta= $usuario->buscarUsuarioEnformaFacebook($facebook);
+		}
+		else{$respuesta=$facebookValidado;}
+		return $respuesta;
+	}
+
+
+//***********************************************************************************
+
+	function nuevoUsuarioEnforma($nombre, $apellidos,$correo,$facebook, $password){
+		$facebookValidado= validarTextoNulo($facebook, "El id facebook del usuario");
+        $correoValidado= validarTextoNulo($correo, "El correo del usuario");
+		if ($facebookValidado["success"]==1 or $correoValidado["success"]==1){
+				$usuario = new UsuarioEnforma();
+                $bandera=0;
+
+            if ($correoValidado["success"]==1)
+            {
+
+                $correoRepetido=$usuario->validarCorreoRepetido($correo);
+                if ($correoRepetido["success"]==0){
+                    $respuesta=$correoRepetido;
+                    $bandera+=1;
+                }
+
+            }
+            if ($facebookValidado["success"]==1)
+            {
+
+                $facebookRepetido=$usuario->validarFacebookRepetido($facebook);
+                if ($facebookRepetido["success"]==0){
+                    $respuesta=$facebookRepetido;
+                    $bandera+=1;
+                }
+
+            }
+
+            if ($bandera==2)
+            {
+                $respuesta["success"]=0;
+			    $respuesta["message"]='El correo y facebook ya se encuentran registrados';
+            }
+
+            if ($bandera==0)
+            {
+
+                if ($password!=NULL and $password!='')
+                {
+                    $salt = '$EnfoArt$/';
+                    $password = sha1(md5($salt . $password));
+                }
+
+                $respuesta= $usuario->RegistroUsuarioEnforma($nombre, $apellidos,$correo,$facebook, $password);
+            }
+
+		}
+		else{
+            $respuesta["success"]=0;
+			$respuesta["message"]='El correo o facebook, deben ser diferente de nulo o cadena vacia';
+        }
+		return $respuesta;
+	}
+
+//******************************************************************************************************************************************
+//******************************************************************************************************************************************
+//******************************************************************************************************************************************
 
 		switch ($metodoBl) {
 		case "logueoCorreoPassword": // Mandar cero, para obtener todos los aparatos, o el id del aparatado especifico.
 			$response=logueoCorreoPassword($correoBl,$passwordBl);
 		break;
 		case "logueoCorreo": // Mandar cero, para obtener todos los aparatos, o el id del aparatado especifico.
-			$response=logueoCorreoPassword($correoBl);
+			$response=logueoCorreo($correoBl);
 		break;
         case "logueoFacebook": // Mandar cero, para obtener todos los aparatos, o el id del aparatado especifico.
-			$response=logueoCorreoPassword($idFacebookBl);
+			$response=logueoFacebook($idFacebookBl);
+		break;
+        case "RegistroDeUsuario": // Mandar cero, para obtener todos los aparatos, o el id del aparatado especifico.
+            if ($nombreBl!==NULL){$nombreBl=trim($nombreBl);}
+            if ($apellidosBl!==NULL){$apellidosBl=trim($apellidosBl);}
+            if ($correoBl!==NULL){$correoBl=trim($correoBl);}
+            if ($idFacebookBl!==NULL){$idFacebookBl=trim($idFacebookBl);}
+            if ($passwordBl!==NULL){$passwordBl=trim($passwordBl);}
+			$response=nuevoUsuarioEnforma($nombreBl,$apellidosBl,$correoBl,$idFacebookBl,$passwordBl);
 		break;
 		default:
 		{

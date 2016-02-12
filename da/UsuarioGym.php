@@ -12,17 +12,17 @@ class UsuarioGym{
 
 		if ($idUsuario!=0)
 		{
-			$sql="SELECT UG_Id, IdGym, gimnasio.Nombre as Gimnasio, IdUsuario, usuariogimnasio.Estatus, IdRol, rol.Nombre as Rol
-            FROM usuariogimnasio join gimnasio on usuariogimnasio.IdGym=gimnasio.G_Id  join  rol on usuariogimnasio.idRol=rol.R_Id
+			$sql="SELECT UG_Id, IdGym, Gimnasio.Nombre as Gimnasio, IdUsuario, UsuarioGimnasio.Estatus, IdRol, Rol.Nombre as Rol
+            FROM UsuarioGimnasio join Gimnasio on UsuarioGimnasio.IdGym=Gimnasio.G_Id  join  Rol on UsuarioGimnasio.idRol=Rol.R_Id
             where IdUsuario='$idUsuario'";
 		}
 		else
 		{
-			$sql="SELECT UG_Id, IdGym, gimnasio.Nombre as Gimnasio, IdUsuario, usuariogimnasio.Estatus, IdRol, rol.Nombre as Rol
-            FROM usuariogimnasio join gimnasio on usuariogimnasio.IdGym=gimnasio.G_Id join  rol on usuariogimnasio.idRol=rol.R_Id;";
+			$sql="SELECT UG_Id, IdGym, Gimnasio.Nombre as Gimnasio, IdUsuario, UsuarioGimnasio.Estatus, IdRol, Rol.Nombre as Rol
+            FROM UsuarioGimnasio join Gimnasio on UsuarioGimnasio.IdGym=Gimnasio.G_Id join  Rol on UsuarioGimnasio.idRol=Rol.R_Id;";
 		}
 
-		if($result = mysqli_query($conexion, $sql))
+        if($result = mysqli_query($conexion, $sql))
 		{
             if($result!=null){
                 if ($result->num_rows>0){
@@ -45,14 +45,14 @@ class UsuarioGym{
                 }
                 else{
                     $response["success"]=0;
-                    $response["message"]='No se encontró el usuario asociado con algún gimnasio';
+                    $response["message"]='No se encontró el usuario asociado con algún Gimnasio';
                 }
 
             }
             else
                 {
                     $response["success"]=0;
-                    $response["message"]='No se encontró el usuario asociado con algún gimnasio';
+                    $response["message"]='No se encontró el usuario asociado con algún Gimnasio';
                 }
 		}
 		else
@@ -66,7 +66,7 @@ class UsuarioGym{
 
     //**********************************************************************
 
-    function getUsuarioGymByIDU_IDGym($idUsuario,$idGym){ // Esta función nos regresa todos los registros de usuarioGym, que correspondan a un usuario y gimnasio especifico
+    function getUsuarioGymByIDU_IDGym($idUsuario,$idGym){ // Esta función nos regresa todos los registros de usuarioGym, que correspondan a un usuario y Gimnasio especifico
 		//Creamos la conexión con la función anterior
 		$conexion = obtenerConexion();
 
@@ -75,9 +75,9 @@ class UsuarioGym{
 		if ($idUsuario!=0)
 		{
             if ($idGym!=0){
-                $sql="SELECT UG_Id, IdGym, gimnasio.Nombre as Gimnasio, IdUsuario, usuariogimnasio.Estatus, IdRol, rol.Nombre as Rol
-                FROM usuariogimnasio join gimnasio on usuariogimnasio.IdGym=gimnasio.G_Id  join  rol on usuariogimnasio.idRol=rol.R_Id
-                where IdUsuario='$idUsuario' and usuariogimnasio.idGym='$idGym'";
+                $sql="SELECT UG_Id, IdGym, Gimnasio.Nombre as Gimnasio, IdUsuario, UsuarioGimnasio.Estatus, IdRol, Rol.Nombre as Rol
+                FROM UsuarioGimnasio join Gimnasio on UsuarioGimnasio.IdGym=Gimnasio.G_Id  join  Rol on UsuarioGimnasio.idRol=Rol.R_Id
+                where IdUsuario='$idUsuario' and UsuarioGimnasio.idGym='$idGym'";
 
                 if($result = mysqli_query($conexion, $sql))
                 {
@@ -102,14 +102,14 @@ class UsuarioGym{
                         }
                         else{
                             $response["success"]=0;
-                            $response["message"]='No se encontró el usuario asociado con el gimnasio indicado';
+                            $response["message"]='No se encontró el usuario asociado con el Gimnasio indicado';
                         }
 
                     }
                     else
                         {
                             $response["success"]=0;
-                            $response["message"]='No se encontró el usuario asociado con el gimnasio indicado';
+                            $response["message"]='No se encontró el usuario asociado con el Gimnasio indicado';
                         }
                 }
                 else
@@ -121,7 +121,7 @@ class UsuarioGym{
             else
 		      {
                 $response["success"]=0;
-                $response["message"]='El id del gimnasio debe ser diferente de cero';
+                $response["message"]='El id del Gimnasio debe ser diferente de cero';
 		      }
         }
 		else
