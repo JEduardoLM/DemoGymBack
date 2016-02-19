@@ -18,12 +18,12 @@
 	$passwordBl= $data["Password"];
 	$estatusBl= $data["Estatus"];
 
-	// $metodoBl='RegistroDeUsuario';
-    // $correoBl='NuevoCorreo8@correo.com';
-    // $idFacebookBl='';
-    // $nombreBl='Usuario de prueba BL';
-    // $apellidosBl='LM TEST Bl';
-	// $passwordBl='correo';
+	 //$metodoBl='logueoCorreoPassword';
+     //$correoBl='scorres5o@correo.com';
+     //$idFacebookBl='li.eduardo.lm@gmail.com';
+     //$nombreBl='Usuario de prueba BL';
+     //$apellidosBl='LM TEST Bl';
+	 //$passwordBl='correo';
 
     function validarTextoNulo($Texto,$Valor){
 		if ($Texto!==NULL){
@@ -31,12 +31,12 @@
 				$Rvalidacion["success"]=1;
 			}
 			else{
-				$Rvalidacion["success"]=0;
+				$Rvalidacion["success"]=8;
 				$Rvalidacion["message"]=$Valor.' debe ser diferente de cadena vacia';
 			}
 		}
 		else{
-			$Rvalidacion["success"]=0;
+			$Rvalidacion["success"]=7;
 			$Rvalidacion["message"]=$Valor.' debe ser diferente de NULO';
 		}
 		return $Rvalidacion;
@@ -97,7 +97,7 @@
             {
 
                 $correoRepetido=$usuario->validarCorreoRepetido($correo);
-                if ($correoRepetido["success"]==0){
+                if ($correoRepetido["success"]!=0){
                     $respuesta=$correoRepetido;
                     $bandera+=1;
                 }
@@ -107,7 +107,7 @@
             {
 
                 $facebookRepetido=$usuario->validarFacebookRepetido($facebook);
-                if ($facebookRepetido["success"]==0){
+                if ($facebookRepetido["success"]!=0){
                     $respuesta=$facebookRepetido;
                     $bandera+=1;
                 }
@@ -116,7 +116,7 @@
 
             if ($bandera==2)
             {
-                $respuesta["success"]=0;
+                $respuesta["success"]=6;
 			    $respuesta["message"]='El correo y facebook ya se encuentran registrados';
             }
 
@@ -134,7 +134,7 @@
 
 		}
 		else{
-            $respuesta["success"]=0;
+            $respuesta["success"]=5;
 			$respuesta["message"]='El correo o facebook, deben ser diferente de nulo o cadena vacia';
         }
 		return $respuesta;
@@ -164,7 +164,7 @@
 		break;
 		default:
 		{
-			$response["success"]=0;
+			$response["success"]=2;
 			$response["message"]='El método indicado no se encuentra registrado';
 		}
 
