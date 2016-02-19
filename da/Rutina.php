@@ -11,7 +11,7 @@ class Rutina{
 
 		if ($idSocio!=0)
 		{
-			$sql= "SELECT  R_ID, Nombre, FechaInicio, FechaFin, Estatus, Objetivo, id_Socio, id_Instructor FROM rutina where Estatus=1  and id_Socio=$idSocio order  by FechaInicio desc  LIMIT 1";
+			$sql= "SELECT  R_ID, Nombre, FechaInicio, FechaFin, Estatus, Objetivo, id_Socio, id_Instructor FROM Rutina where Estatus=1  and id_Socio=$idSocio order  by FechaInicio desc  LIMIT 1";
 
             if($result = mysqli_query($conexion, $sql))
             {

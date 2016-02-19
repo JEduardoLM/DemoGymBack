@@ -25,11 +25,11 @@
 
 
 
-	// $metodoBl="obtenerGimnasiosDeUsuario";
-    // $idUsuarioBl=3;
-    // $idGimnasioBl=2;
-    // $idSocioBl=2;
-   // $idRutinaBl=3;
+	    // $metodoBl="obtenerGimnasiosDeUsuario";
+        // $idUsuarioBl=2;
+        // $idGimnasioBl=2;
+        // $idSocioBl=2;
+        // $idRutinaBl=3;
 
 	function getUsuarioGymByIDU($idUsuario){
 
@@ -42,13 +42,13 @@
             }
             else
             {
-            $response["success"]=0;
+            $response["success"]=5;
 			$response["message"]='El id del usuario debe ser un dato numérico';
             }
         }
         else
         {
-            $response["success"]=0;
+            $response["success"]=6;
 			$response["message"]='El id del usuario debe ser diferente de NULO';
         }
         return $response;
@@ -169,6 +169,43 @@
         return $response;
     }
 
+
+    function getSubrutinasByIdUsuarioIdGymCompleta($idUsuario, $idGym)
+    {
+
+        if ($idUsuario!=NULL){  //Validamos que el id envíado sea diferente de NULO
+            if ($idGym!=NULL){
+                if (is_numeric($idUsuario)){
+                    if (is_numeric($idGym)){
+                        $subrutina = new Subrutina();
+                        $response= $subrutina->getSubRutinaByIdIdUIdGymCompleta($idUsuario,$idGym);
+                    }
+                    else
+                    {
+                        $response["success"]=0;
+                        $response["message"]='El id del gimnasio debe ser un dato numérico';
+                    }
+                }
+                else
+                {
+                    $response["success"]=0;
+                    $response["message"]='El id del usuario debe ser un dato numérico';
+                }
+            }
+            else{
+                $response["success"]=0;
+			     $response["message"]='El id del gimnasio debe ser diferente de NULO';
+            }
+
+        }
+        else
+        {
+            $response["success"]=0;
+			$response["message"]='El id del usuario debe ser diferente de NULO';
+        }
+        return $response;
+    }
+
 	switch ($metodoBl) {
 		case "obtenerGimnasiosDeUsuario": // Mandar cero, para obtener todos los aparatos, o el id del aparatado especifico.
 			$response=getUsuarioGymByIDU($idUsuarioBl);
@@ -185,9 +222,12 @@
         case "ObtenerSubrutinasByIdU_IdGym":
             $response=getSubrutinasByIdUsuarioIdGym($idUsuarioBl, $idGimnasioBl);
 		break;
+        case "ObtenerSubrutinasByIdUIdGymCompleta":
+            $response=getSubrutinasByIdUsuarioIdGymCompleta($idUsuarioBl, $idGimnasioBl);
+		break;
 		default:
 		{
-			$response["success"]=0;
+			$response["success"]=2;
 			$response["message"]='El método indicado no se encuentra registrado';
 		}
 

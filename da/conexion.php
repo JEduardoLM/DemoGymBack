@@ -10,14 +10,8 @@
 
 function obtenerConexion(){
 
-   $conexion = mysqli_connect(SERVIDOR,USUARIO,CONTRASENA,BASEDEDATOS) or die('Unable to Connect');
-
-    if($conexion){
-      //  echo 'La conexión de la base de datos se ha hecho satisfactoriamente';
-    }
-    else{
-        echo 'Ha sucedido un error inesperado en la conexión de la base de datos';
-    }
+    error_reporting(0);
+    $conexion = mysqli_connect(SERVIDOR,USUARIO,CONTRASENA,BASEDEDATOS);
     return $conexion;
 }
 
@@ -34,5 +28,6 @@ function desconectar($conexion){
 
     return $close;
 }
+
 
 ?>

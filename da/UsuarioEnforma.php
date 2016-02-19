@@ -80,7 +80,9 @@ class UsuarioEnforma{
 
 		//Creamos la conexión a la base de datos
 		$conexion = obtenerConexion();
-		mysqli_set_charset($conexion, "utf8"); //Formato de datos utf8
+
+
+        mysqli_set_charset($conexion, "utf8"); //Formato de datos utf8
 
 
 		$sql="select * from UsuarioEnforma where Correo='$correo'";
