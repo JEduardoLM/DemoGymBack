@@ -25,9 +25,9 @@
 
 
 
-	    // $metodoBl="obtenerGimnasiosDeUsuario";
-        // $idUsuarioBl=2;
-        // $idGimnasioBl=2;
+	    // $metodoBl="ObtenerSubrutinasByIdUIdGymCompleta";
+        // $idUsuarioBl='';
+        // $idGimnasioBl='';
         // $idSocioBl=2;
         // $idRutinaBl=3;
 
@@ -182,25 +182,25 @@
                     }
                     else
                     {
-                        $response["success"]=0;
+                        $response["success"]=10;
                         $response["message"]='El id del gimnasio debe ser un dato numérico';
                     }
                 }
                 else
                 {
-                    $response["success"]=0;
+                    $response["success"]=9;
                     $response["message"]='El id del usuario debe ser un dato numérico';
                 }
             }
             else{
-                $response["success"]=0;
+                $response["success"]=8;
 			     $response["message"]='El id del gimnasio debe ser diferente de NULO';
             }
 
         }
         else
         {
-            $response["success"]=0;
+            $response["success"]=7;
 			$response["message"]='El id del usuario debe ser diferente de NULO';
         }
         return $response;

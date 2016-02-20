@@ -2,11 +2,18 @@
 
 //require_once('config.php');
 
+
 	define('SERVIDOR', 'localhost');
 	define('USUARIO', 'admin');
 	define('CONTRASENA','enforma123');
 	define('BASEDEDATOS','enforma');
+/*
 
+	define('SERVIDOR', 'mysql.hostinger.mx');
+	define('USUARIO', 'u304663758_admin');
+	define('CONTRASENA','enforma123');
+	define('BASEDEDATOS','u304663758_enfo');
+*/
 
 function obtenerConexion(){
 
