@@ -238,8 +238,10 @@ class Subrutina{
 
 		if ($idEjercicio!=0)
 		{
-			$sql= "SELECT  NumeroSerie, (SELECT ts.Nombre FROM tiposerie ts where ts.TSr_ID=s.id_TipoSerie) as TipoSerie, Repeticiones, PesoPropuesto, (SELECT Abreviatura
-                    FROM unidadespeso up where up.UP_ID=s.TipoPeso) as TipoPeso, Observaciones   FROM serie s where id_SubrutinaEjercicio=$idEjercicio;";
+			$sql= "SELECT NumeroSerie, ( SELECT ts.Nombre FROM TipoSerie ts WHERE ts.TSr_ID = s.id_TipoSerie ) AS TipoSerie,
+                            Repeticiones, PesoPropuesto,
+                            (SELECT Abreviatura FROM UnidadesPeso up WHERE up.UP_ID = s.TipoPeso ) AS TipoPeso, Observaciones FROM Serie s
+                    WHERE id_SubrutinaEjercicio =$idEjercicio;";
 
             if($result = mysqli_query($conexion, $sql))
             {
@@ -251,11 +253,22 @@ class Subrutina{
                         {
                             $item = array();
                             $item["NumeroSerie"]=$row["NumeroSerie"];
+                            if ($item["NumeroSerie"]==NULL){$item["NumeroSerie"]=0;}
+
                             $item["TipoSerie"]=$row["TipoSerie"];
+                            if ($item["TipoSerie"]==NULL){$item["TipoSerie"]='';}
+
                             $item["Repeticiones"]=$row["Repeticiones"];
+                            if ($item["Repeticiones"]==NULL){$item["Repeticiones"]=0;}
+
                             $item["PesoPropuesto"]=$row["PesoPropuesto"];
+                            if ($item["PesoPropuesto"]==NULL){$item["PesoPropuesto"]=0;}
+
                             $item["TipoPeso"]=$row["TipoPeso"];
+                            if ($item["TipoPeso"]==NULL){$item["TipoPeso"]='';}
+
                             $item["Observaciones"]=$row["Observaciones"];
+                            if ($item["Observaciones"]==NULL){$item["Observaciones"]='';}
 
                         array_push($response["series"], $item);
                         }
@@ -328,7 +341,7 @@ class Subrutina{
                             sec.TiempoTotal,
                             sec.VelocidadPromedio,
                             (select abreviatura from UnidadesVelocidad where UV_ID= sec.TipoDeVelocidad) as UnidadVelocidad,
-                            sec.RitmoCardiaco, sec.Observaciones, 0 as TiempoDescansoEntreSerie,
+                            sec.RitmoCardiaco, sec.Nivel, sec.Observaciones, 0 as TiempoDescansoEntreSerie,
                             1 as TipoDeEjercicio
                         FROM SubRutinaEjercicioCardio sec JOIN SucursalEjercicioCardio sc on sec.Id_EjercicioCardio=sc.SEC_ID
                         join EjercicioCardio e on sc.Id_EjercicioCardio=e.EC_ID
@@ -347,7 +360,7 @@ class Subrutina{
                             (Select group_concat(Repeticiones) as Repeticiones FROM Serie where id_SubrutinaEjercicio=sep.SEP_ID) as Repeticiones,
                             (Select group_concat(DISTINCT PesoPropuesto) as PesoPropuesto FROM Serie where id_SubrutinaEjercicio=sep.SEP_ID) as PesoPropuesto,
                             (SELECT u.Abreviatura FROM Serie s join UnidadesPeso u ON s.TipoPeso=u.UP_ID where id_SubrutinaEjercicio=10 LIMIT 1) AS UnidadPeso,
-                            0 as TiempoTotal, 0 as VelocidadPromedio, 0 as UnidadVelocidad,  0 as RitmoCardiaco, Observaciones, TiempoDescansoEntreSerie,
+                            0 as TiempoTotal, 0 as VelocidadPromedio, 0 as UnidadVelocidad,  0 as RitmoCardiaco, 0 as Nivel, Observaciones, TiempoDescansoEntreSerie,
                             2 as TipoDeEjercicio
 
                     from SubRutinaEjercicioPeso sep JOIN SucursalEjercicioPesa sp on sep.id_EjercicioPeso=sp.SEP_ID
@@ -374,10 +387,10 @@ class Subrutina{
                                     if ($item["IdEjercicio"]==NULL){$item["IdEjercicio"]=0;}
 
                                     $item["NombreEjercicio"]=$row["NombreEjercicio"];
-                                    if ($item["NombreEjercicio"]==NULL){$item["NombreEjercicio"]=0;}
+                                    if ($item["NombreEjercicio"]==NULL){$item["NombreEjercicio"]='';}
 
                                     $item["AliasEjercicio"]=$row["AliasEjercicio"];
-                                    if ($item["AliasEjercicio"]==NULL){$item["AliasEjercicio"]=0;}
+                                    if ($item["AliasEjercicio"]==NULL){$item["AliasEjercicio"]='';}
 
                                     $item["CodigoImagen1"]=$row["CodigoImagen1"];
                                     if ($item["CodigoImagen1"]==NULL){$item["CodigoImagen1"]=0;}
@@ -386,13 +399,13 @@ class Subrutina{
                                     if ($item["CodigoImagen2"]==NULL){$item["CodigoImagen2"]=0;}
 
                                     $item["ImagenGenerica1"]=$row["ImagenGenerica1"];
-                                    if ($item["ImagenGenerica1"]==NULL){$item["ImagenGenerica1"]=0;}
+                                    if ($item["ImagenGenerica1"]==NULL){$item["ImagenGenerica1"]='';}
 
                                     $item["ImagenGenerica2"]=$row["ImagenGenerica2"];
-                                    if ($item["ImagenGenerica2"]==NULL){$item["ImagenGenerica2"]=0;}
+                                    if ($item["ImagenGenerica2"]==NULL){$item["ImagenGenerica2"]='';}
 
                                     $item["TipoFuenteImagen"]=$row["TipoFuenteImagen"];
-                                    if ($item["TipoFuenteImagen"]==NULL){$item["TipoFuenteImagen"]=0;}
+                                    if ($item["TipoFuenteImagen"]==NULL){$item["TipoFuenteImagen"]='';}
 
                                     $item["SuperSerie"]=$row["SuperSerie"];
                                     if ($item["SuperSerie"]==NULL){$item["SuperSerie"]=0;}
@@ -416,10 +429,16 @@ class Subrutina{
                                     if ($item["VelocidadPromedio"]==NULL){$item["VelocidadPromedio"]=0;}
 
                                     $item["UnidadVelocidad"]=$row["UnidadVelocidad"];
-                                    if ($item["UnidadVelocidad"]==NULL){$item["UnidadVelocidad"]=0;}
+                                    if ($item["UnidadVelocidad"]==NULL){$item["UnidadVelocidad"]='';}
 
                                     $item["RitmoCardiaco"]=$row["RitmoCardiaco"];
                                     if ($item["RitmoCardiaco"]==NULL){$item["RitmoCardiaco"]=0;}
+
+                                    $item["Nivel"]=$row["Nivel"];
+                                    if ($item["Nivel"]==NULL){$item["Nivel"]=0;}
+
+                                    $item["Observaciones"]=$row["Observaciones"];
+                                    if ($item["Observaciones"]==NULL){$item["Observaciones"]='';}
 
                                     $item["TipoDeEjercicio"]=$row["TipoDeEjercicio"];
                                     if ($item["TipoDeEjercicio"]==NULL){$item["TipoDeEjercicio"]=0;}
@@ -476,9 +495,9 @@ class Subrutina{
 
 }
 
-    //$Rutina = new Subrutina();
-    //$RutinaR=$Rutina->getSubRutinaByIdIdUIdGymCompleta(1,2);
-    //echo json_encode ($RutinaR);
+     //$Rutina = new Subrutina();
+     //$RutinaR=$Rutina->getSubRutinaByIdIdUIdGymCompleta(1,2);
+     //echo json_encode ($RutinaR);
 
 
 ?>

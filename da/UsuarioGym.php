@@ -1,6 +1,7 @@
 <?php
 
 require_once('conexion.php');
+require_once('Gimnasio.php');
 
 class UsuarioGym{
 
@@ -32,6 +33,7 @@ class UsuarioGym{
                     if ($result->num_rows>0){
 
                         $response["usuarioGyms"] = array();
+                        $G = new Gimnasio();
                         while($row = mysqli_fetch_array($result))
                         {
                             $item = array();
@@ -42,6 +44,7 @@ class UsuarioGym{
                             $item["Estatus"]=$row["Estatus"];
                             $item["IdRol"]=$row["IdRol"];
                             $item["NombreRol"]=$row["NombreRol"];
+                            $item["Configuracion"]= $G->getConfiguracionByGymId($item["IdGym"]);
                             array_push($response["usuarioGyms"], $item);
                         }
                         $response["success"]=0;
@@ -150,7 +153,7 @@ class UsuarioGym{
 }
 
  // $UG = new UsuarioGym();
- // $UGs=$UG->getUsuarioGymByIDU(24);
+ // $UGs=$UG->getUsuarioGymByIDU(2);
  // echo json_encode ($UGs);
 
 
