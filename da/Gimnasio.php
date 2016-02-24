@@ -37,7 +37,10 @@ class Gimnasio{
 		return json_encode($rawdata); //devolvemos el array
 	}
 
-    	function getConfiguracionByGymId($idGimnasio){
+    //********************************************************************************************************************************************************
+    //********************************************************************************************************************************************************
+
+    function getConfiguracionByGymId($idGimnasio){
 		//Creamos la conexión con la función anterior
 		$conexion = obtenerConexion();
         if ($conexion){  // Checamos que la conexión se haya realizado correctamente
@@ -109,10 +112,90 @@ class Gimnasio{
         }
 		return $response; //devolvemos el array
 	}
+
+        //********************************************************************************************************************************************************
+    //********************************************************************************************************************************************************
+
+    function getSucursalesByGym($idGimnasio, $idUsuario){
+        //Esta función nos va a permitir obtener las sucursales asociadas a un gimnasio, así como sólo aquellas sucursales a las cuales tenga acceso el usuario logueado
+
+        //Creamos la conexión con la función anterior
+		$conexion = obtenerConexion();
+        if ($conexion){  // Checamos que la conexión se haya realizado correctamente
+
+		//generamos la consulta
+		mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
+
+        $sql="SELECT S_Id, Nombre, Direccion, Ciudad, Estado, Pais, C_Latitud, C_Longitud, Id_Gimnasio FROM Sucursal where Id_Gimnasio='$idGimnasio'";
+
+                if($result = mysqli_query($conexion, $sql))
+                {
+                    if($result!=null){
+                        if ($result->num_rows>0){
+
+                            $response["sucursales"] = array();
+                            while($row = mysqli_fetch_array($result))
+                            {
+                                $item = array();
+                                $item["S_Id"]=$row["S_Id"];
+                                $item["Nombre"]=$row["Nombre"];
+
+                                $item["Direccion"]=$row["Direccion"];
+                                if ($item["Direccion"]==NULL){$item["Direccion"]='';}
+
+                                $item["Ciudad"]=$row["Ciudad"];
+                                if ($item["Ciudad"]==NULL){$item["Ciudad"]='';}
+
+                                $item["Estado"]=$row["Estado"];
+                                if ($item["Estado"]==NULL){$item["Estado"]='';}
+
+                                $item["Pais"]=$row["Pais"];
+                                if ($item["Pais"]==NULL){$item["Pais"]='';}
+
+                                $item["C_Latitud"]=$row["C_Latitud"];
+                                if ($item["C_Latitud"]==NULL){$item["C_Latitud"]=0;}
+
+                                $item["C_Longitud"]=$row["C_Longitud"];
+                                if ($item["C_Longitud"]==NULL){$item["C_Longitud"]=0;}
+
+                                $item["Id_Gimnasio"]=$row["Id_Gimnasio"];
+
+                                array_push($response["sucursales"], $item);
+                            }
+                            $response["success"]=0;
+                            $response["message"]='Consulta exitosa';
+                        }
+                        else{
+                            $response["success"]=1;
+                            $response["message"]='No se encontraron sucursales para el gimnasio indicado';
+                        }
+
+                    }
+                    else
+                        {
+                            $response["success"]=1;
+                            $response["message"]='No se encontraron sucursales para el Gimnasio indicado';
+                        }
+                }
+                else
+                {
+                    $response["success"]=4;
+                    $response["message"]='Se presento un error al ejecutar la consulta';
+                }
+
+		desconectar($conexion); //desconectamos la base de datos
+        }
+        else
+        {
+            $response["success"]=3;
+            $response["message"]='Se presentó un error en la conexión con la base de datos';
+        }
+		return $response; //devolvemos el array
+	}
 }
 
-// $G = new Gimnasio();
-// $Gyms=$G->getConfiguracionByGymId(1);
-// echo json_encode($Gyms);
+ //$G = new Gimnasio();
+ //$Gyms=$G->getSucursalesByGym(2,0);
+ //echo json_encode($Gyms);
 
 ?>
