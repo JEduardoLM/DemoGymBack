@@ -67,9 +67,40 @@ class Socio{
 
 }
 
-// $UG = new Socio();
-// $UGs=$UG->getSocioByIdUsuarioIdGym(2,2);
-// echo json_encode ($UGs);
+function asociarSocioGimnasio($idUsuario, $idGimnasio, $idSucursal){
+    		//Creamos la conexión con la función anterior
+		$conexion = obtenerConexion();
+ 		//generamos la consulta
+		mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
+
+			$sql="INSERT INTO Aparato (`Nombre`, `Descripcion`,`estatus`) VALUES ('$nombre', '$descripcion',1);";
+			if($result = mysqli_query($conexion, $sql)){
+
+				// Volvemos a consultar el listado de aparatos
+				$response["aparatos"]= array();
+				$arregloAparatos=$this->getAparato(0);
+				$response["aparatos"]=$arregloAparatos["aparatos"];
+
+
+				$response["success"]=1;
+				$response["message"]='Aparato almacenado correctamente';
+
+				}
+			else {
+				//return 'El aparato no pudo ser almacenado correctamente';
+					$response["success"]=0;
+					$response["message"]='El aparato no pudo ser almacenado correctamente';
+
+				}
+		desconectar($conexion); //desconectamos la base de datos
+		return  ($response); //devolvemos el array
+
+
+}
+
+//$UG = new Socio();
+//$UGs=$UG->getSocioByIdUsuarioIdGym(2,2);
+//echo json_encode ($UGs);
 
 
 ?>

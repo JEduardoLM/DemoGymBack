@@ -18,7 +18,7 @@
 	$passwordBl= $data["Password"];
 	$estatusBl= $data["Estatus"];
 
-	 //$metodoBl='logueoCorreoPassword';
+     //$metodoBl='logueoCorreoPassword';
      //$correoBl='scorres5o@correo.com';
      //$idFacebookBl='li.eduardo.lm@gmail.com';
      //$nombreBl='Usuario de prueba BL';
