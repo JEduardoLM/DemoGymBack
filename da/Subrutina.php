@@ -446,7 +446,7 @@ class Subrutina{
 
                                     if ($item["TipoDeEjercicio"]==2){ //Si es un ejercicio de pesas, hay que agregar las
                                         $Series=array();
-                                        $Series=$this->getSerieByEjercicioSubrutina( $item["IdEjercicio"]);
+                                        $Series=$this->getSerieByEjercicioSubrutina( $item["ID"]);
                                         $item["Series"]=$Series;
                                     }
 

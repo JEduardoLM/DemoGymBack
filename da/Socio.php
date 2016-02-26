@@ -65,41 +65,137 @@ class Socio{
 	}
 
 
-}
+
+//********************************************************************************************************************
+//********************************************************************************************************************
+//********************************************************************************************************************
+
+
+	function getSociosBySucursalId($idSucursal){ // Esta función nos regresa los socios que esten asociados a un usuario/gymnasio (en teoría sólo debe haber un registro así)
+		//Creamos la conexión con la función anterior
+		$conexion = obtenerConexion();
+
+		mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
+		$sql= "SELECT ue.Id as UsuarioEnformaId, ug.UG_ID as UsuarioGymId, s.So_Id as SocioId, CodigoEnforma, ue.Nombre as NombreUsuario, Apellidos, Correo, IdFacebook, s.Estatus, ug.IdRol, r.Nombre as NombreRol, Id_Sucursal
+	               FROM UsuarioEnforma ue join UsuarioGimnasio ug on ue.id=ug.idUsuario join Rol r on ug.IdRol=r.R_id join socio s on ug.UG_Id=So_Id where s.Id_Sucursal=$idSucursal";
+
+            if($result = mysqli_query($conexion, $sql))
+            {
+                if($result!=null){
+                    if ($result->num_rows>0){
+
+                        $response["socios"] = array();
+                        while($row = mysqli_fetch_array($result))
+                        {
+                            $item = array();
+                            $item["UsuarioEnformaId"]=$row["UsuarioEnformaId"];
+                            $item["UsuarioGymId"]=$row["UsuarioGymId"];
+                            $item["SocioId"]=$row["SocioId"];
+
+                            $item["CodigoEnforma"]=$row["CodigoEnforma"];
+
+                            $item["NombreUsuario"]=$row["NombreUsuario"];
+                            if ($item["NombreUsuario"]==NULL){$item["NombreUsuario"]='';}
+
+                            $item["Apellidos"]=$row["Apellidos"];
+                            $item["Correo"]=$row["Correo"];
+                            $item["IdFacebook"]=$row["IdFacebook"];
+                            $item["Estatus"]=$row["Estatus"];
+                            $item["NombreRol"]=$row["NombreRol"];
+                            $item["Id_Sucursal"]=$row["Id_Sucursal"];
+
+                            array_push($response["socios"], $item);
+                        }
+                        $response["success"]=1;
+                        $response["message"]='Consulta exitosa';
+                    }
+                    else{
+                        $response["success"]=0;
+                        $response["message"]='No existe un socio registrado del usuario en el gimnasio indicado';
+                    }
+
+                }
+                else
+                    {
+                        $response["success"]=0;
+                        $response["message"]='No existe un socio registrado del usuario en el gimnasio indicado';
+                    }
+            }
+            else
+            {
+                $response["success"]=0;
+                $response["message"]='Se presento un error al ejecutar la consulta';
+            }
+
+
+		desconectar($conexion); //desconectamos la base de datos
+		return ($response); //devolvemos el array
+
+    }
+
+//********************************************************************************************************************
+//********************************************************************************************************************
+//********************************************************************************************************************
 
 function asociarSocioGimnasio($idUsuario, $idGimnasio, $idSucursal){
-    		//Creamos la conexión con la función anterior
-		$conexion = obtenerConexion();
- 		//generamos la consulta
-		mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
 
-			$sql="INSERT INTO Aparato (`Nombre`, `Descripcion`,`estatus`) VALUES ('$nombre', '$descripcion',1);";
+    //Creamos la conexión con la función anterior
+	$conexion = obtenerConexion();
+
+    //generamos la consulta
+    mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
+
+    /* deshabilitar autocommit */
+    mysqli_autocommit($conexion, FALSE);
+
+
+			$sql="INSERT INTO UsuarioGimnasio (`IdGym`, `IdUsuario`, `Estatus`, `IdRol`) VALUES ($idGimnasio, $idUsuario , '1', '1');";
+
 			if($result = mysqli_query($conexion, $sql)){
 
-				// Volvemos a consultar el listado de aparatos
-				$response["aparatos"]= array();
-				$arregloAparatos=$this->getAparato(0);
-				$response["aparatos"]=$arregloAparatos["aparatos"];
+                $idUsuarioGym=mysqli_insert_id($conexion);
+
+                $hoy = date("Y-m-d");
+
+                $sql2="INSERT INTO Socio (`Id_Sucursal`, `Id_UsuarioGym`, `FechaIngreso`, `Estatus`) VALUES ($idSucursal, $idUsuarioGym , '$hoy' , '1')";
+
+                if($result = mysqli_query($conexion, $sql2)){
+
+                    mysqli_commit($conexion);
+
+                    $response["socios"]=$this->getSociosBySucursalId($idSucursal);
+                    $response["success"]=0;
+				    $response["message"]='Socio registrado correctamente';
+                }
+                else{
+
+                    $response["success"]=0;
+					$response["message"]='No se logró registrar correctamente el socio';
+                    /* Revertir */
+                    mysqli_rollback($link);
+                }
 
 
-				$response["success"]=1;
-				$response["message"]='Aparato almacenado correctamente';
+
 
 				}
 			else {
 				//return 'El aparato no pudo ser almacenado correctamente';
 					$response["success"]=0;
-					$response["message"]='El aparato no pudo ser almacenado correctamente';
+					$response["message"]='No se logró registrar correctamente el UsuarioGym';
+                    /* Revertir */
+                    mysqli_rollback($link);
 
 				}
 		desconectar($conexion); //desconectamos la base de datos
 		return  ($response); //devolvemos el array
 
-
+    }
 }
 
+
 //$UG = new Socio();
-//$UGs=$UG->getSocioByIdUsuarioIdGym(2,2);
+//$UGs=$UG->asociarSocioGimnasio(1,1,2);
 //echo json_encode ($UGs);
 
 

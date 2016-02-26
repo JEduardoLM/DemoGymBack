@@ -14,9 +14,9 @@
     $idUsuarioBl = $data["id_Usuario"];
 
 
-	$metodoBl="getSucursalesByGym";
-	$idGimnasioBl='';
-    $idUsuarioBl=2;
+	//$metodoBl="getSucursalesByGym";
+	//$idGimnasioBl='';
+    //$idUsuarioBl=2;
 
 
 
