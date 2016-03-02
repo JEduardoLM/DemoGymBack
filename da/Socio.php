@@ -77,7 +77,7 @@ class Socio{
 
 		mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
 		$sql= "SELECT ue.Id as UsuarioEnformaId, ug.UG_ID as UsuarioGymId, s.So_Id as SocioId, CodigoEnforma, ue.Nombre as NombreUsuario, Apellidos, Correo, IdFacebook, s.Estatus, ug.IdRol, r.Nombre as NombreRol, Id_Sucursal
-	               FROM UsuarioEnforma ue join UsuarioGimnasio ug on ue.id=ug.idUsuario join Rol r on ug.IdRol=r.R_id join socio s on ug.UG_Id=So_Id where s.Id_Sucursal=$idSucursal";
+	               FROM UsuarioEnforma ue join UsuarioGimnasio ug on ue.id=ug.idUsuario join Rol r on ug.IdRol=r.R_id join socio s on ug.UG_Id=s.Id_UsuarioGym where s.Id_Sucursal=$idSucursal";
 
             if($result = mysqli_query($conexion, $sql))
             {
@@ -98,10 +98,19 @@ class Socio{
                             if ($item["NombreUsuario"]==NULL){$item["NombreUsuario"]='';}
 
                             $item["Apellidos"]=$row["Apellidos"];
+                            if ($item["Apellidos"]==NULL){$item["Apellidos"]='';}
+
                             $item["Correo"]=$row["Correo"];
+                            if ($item["Correo"]==NULL){$item["Correo"]='';}
+
                             $item["IdFacebook"]=$row["IdFacebook"];
+                            if ($item["IdFacebook"]==NULL){$item["IdFacebook"]='';}
+
                             $item["Estatus"]=$row["Estatus"];
+
                             $item["NombreRol"]=$row["NombreRol"];
+                            if ($item["NombreRol"]==NULL){$item["NombreRol"]='';}
+
                             $item["Id_Sucursal"]=$row["Id_Sucursal"];
 
                             array_push($response["socios"], $item);
@@ -146,6 +155,9 @@ function asociarSocioGimnasio($idUsuario, $idGimnasio, $idSucursal){
     mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
 
     /* deshabilitar autocommit */
+    if ($conexion){
+
+
     mysqli_autocommit($conexion, FALSE);
 
 
@@ -169,25 +181,27 @@ function asociarSocioGimnasio($idUsuario, $idGimnasio, $idSucursal){
                 }
                 else{
 
-                    $response["success"]=0;
+                    $response["success"]=5;
 					$response["message"]='No se logró registrar correctamente el socio';
                     /* Revertir */
                     mysqli_rollback($link);
                 }
-
-
-
-
-				}
+            }
 			else {
 				//return 'El aparato no pudo ser almacenado correctamente';
-					$response["success"]=0;
+					$response["success"]=4;
 					$response["message"]='No se logró registrar correctamente el UsuarioGym';
                     /* Revertir */
                     mysqli_rollback($link);
 
 				}
-		desconectar($conexion); //desconectamos la base de datos
+		  desconectar($conexion); //desconectamos la base de datos
+        }
+    else
+    {
+       	$response["success"]=3;
+		$response["message"]='Se presentó un error con la conexión a la BD';
+    }
 		return  ($response); //devolvemos el array
 
     }
@@ -195,7 +209,7 @@ function asociarSocioGimnasio($idUsuario, $idGimnasio, $idSucursal){
 
 
 //$UG = new Socio();
-//$UGs=$UG->asociarSocioGimnasio(1,1,2);
+//$UGs=$UG->getSociosBySucursalId(2);
 //echo json_encode ($UGs);
 
 

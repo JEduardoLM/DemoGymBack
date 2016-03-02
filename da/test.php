@@ -496,7 +496,7 @@ class Subrutina{
 }
 
      $Rutina = new Subrutina();
-     $RutinaR=$Rutina->getSubRutinaByIdIdUIdGymCompleta(1,2);
+     $RutinaR=$Rutina->getSubRutinaByIdIdUIdGymCompleta(26,1);
      echo json_encode ($RutinaR);
 
 

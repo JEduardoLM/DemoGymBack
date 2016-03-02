@@ -14,6 +14,7 @@
     require('../da/Socio.php'); //Se requiere el archivo de acceso a la base de datos
     require('../da/Rutina.php'); //Se requiere el archivo de acceso a la base de datos
     require('../da/Subrutina.php'); //Se requiere el archivo de acceso a la base de datos
+  //  require('../da/Gimnasio.php'); //Se requiere el archivo de acceso a la base de datos
 
 
 	//Extraemos la información del método POST, y lo asignamos a diferentes variables
@@ -22,14 +23,16 @@
     $idGimnasioBl = $data["idGimnasio"];
     $idSocioBl = $data["idSocio"];
     $idRutinaBl = $data["idRutina"];
+    $idSucursalBl= $data["idSucursal"];
 
 
 
-	    // $metodoBl="ObtenerSubrutinasByIdUIdGymCompleta";
-        // $idUsuarioBl='';
-        // $idGimnasioBl='';
+	     //$metodoBl="AsociarUsuarioAGimnasio";
+         //$idUsuarioBl='8';
+         //$idGimnasioBl='2';
         // $idSocioBl=2;
         // $idRutinaBl=3;
+        //$idSucursalBl=3;
 
 	function getUsuarioGymByIDU($idUsuario){
 
@@ -206,6 +209,79 @@
         return $response;
     }
 
+
+
+    function AsociarUsuarioAGym($idUsuario, $idGimnasio, $idSucursal){
+
+     if ($idUsuario!=NULL and $idUsuario>0){  //Validamos que el id envíado sea diferente de NULO
+            if ($idGimnasio!=NULL and $idGimnasio>0){
+                if ($idSucursal!=NULL and $idSucursal>0){
+                    if (is_numeric($idUsuario)){
+                        if (is_numeric($idGimnasio)){
+                            if (is_numeric($idSucursal)){
+
+                                $gym = new Gimnasio();
+
+                                if ($gym->validarSucursalGimnasio($idGimnasio,$idSucursal)==1){
+
+                                $usuarioGym = new UsuarioGym();
+                                $UGS=$usuarioGym->getUsuarioGymByIDU_IDGym($idUsuario, $idGimnasio);
+                                  if ($UGS["message"]=='Consulta exitosa'){
+                                    $response["success"]=13;
+                                    $response["message"]='El usuario ya se encuentra asociado al gimnasio';
+                                    }
+                                    else{
+
+                                        $socio = new socio();
+                                        $response= $socio->asociarSocioGimnasio($idUsuario, $idGimnasio, $idSucursal);
+                                    }
+                                }
+                                else
+                                {
+                                $response["success"]=12;
+                                $response["message"]='La sucursal indicada no corresponde al gimnasio';
+                                }
+
+                            }
+                            else
+                            {
+                                $response["success"]=11;
+                                $response["message"]='El id de la sucursal debe ser un dato numérico';
+                            }
+
+                        }
+                        else
+                        {
+                            $response["success"]=10;
+                            $response["message"]='El id del gimnasio debe ser un dato numérico';
+                        }
+                    }
+                    else
+                    {
+                        $response["success"]=9;
+                        $response["message"]='El id del usuario debe ser un dato numérico';
+                    }
+                }
+                else{
+                    $response["success"]=8;
+			         $response["message"]='El id de la sucursal debe ser diferente de NULO y mayor a cero';
+                }
+            }
+            else{
+                $response["success"]=7;
+			     $response["message"]='El id del gimnasio debe ser diferente de NULO y mayor a cero';
+            }
+
+        }
+        else
+        {
+            $response["success"]=6;
+			$response["message"]='El id del usuario debe ser diferente de NULO y mayor a cero';
+        }
+        return $response;
+
+}
+
 	switch ($metodoBl) {
 		case "obtenerGimnasiosDeUsuario": // Mandar cero, para obtener todos los aparatos, o el id del aparatado especifico.
 			$response=getUsuarioGymByIDU($idUsuarioBl);
@@ -224,6 +300,12 @@
 		break;
         case "ObtenerSubrutinasByIdUIdGymCompleta":
             $response=getSubrutinasByIdUsuarioIdGymCompleta($idUsuarioBl, $idGimnasioBl);
+		break;
+        case "AsociarUsuarioAGimnasio":
+            $response=AsociarUsuarioAGym($idUsuarioBl, $idGimnasioBl, $idSucursalBl);
+		break;
+        case "ObtenerSociosBySucursal":
+            $response=ObtenerSociosBySucursal($idSucursalBl);
 		break;
 		default:
 		{

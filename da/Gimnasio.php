@@ -166,6 +166,7 @@ class Gimnasio{
                             $response["message"]='Consulta exitosa';
                         }
                         else{
+                            $response["sucursales"] = array();
                             $response["success"]=1;
                             $response["message"]='No se encontraron sucursales para el gimnasio indicado';
                         }
@@ -173,12 +174,14 @@ class Gimnasio{
                     }
                     else
                         {
+                            $response["sucursales"] = array();
                             $response["success"]=1;
                             $response["message"]='No se encontraron sucursales para el Gimnasio indicado';
                         }
                 }
                 else
                 {
+                    $response["sucursales"] = array();
                     $response["success"]=4;
                     $response["message"]='Se presento un error al ejecutar la consulta';
                 }
@@ -187,15 +190,57 @@ class Gimnasio{
         }
         else
         {
+            $response["sucursales"] = array();
             $response["success"]=3;
             $response["message"]='Se presentó un error en la conexión con la base de datos';
         }
 		return $response; //devolvemos el array
 	}
+
+    function validarSucursalGimnasio($idGimnasio, $idSucursal){
+		//Creamos la conexión
+		$conexion = obtenerConexion();
+
+		mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
+
+		if ($idGimnasio!=NULL and $idSucursal!=NULL)
+		{
+			$sql= "SELECT S_Id  FROM Sucursal where S_Id='$idSucursal' and id_gimnasio='$idGimnasio'";
+
+            if($result = mysqli_query($conexion, $sql))
+            {
+                if($result!=null){
+                    if ($result->num_rows>0){
+                        $response=1;
+                    }
+                    else{
+                        $response=0;
+                    }
+
+                }
+                else
+                    {
+                        $response=0;
+                    }
+            }
+            else
+            {
+                $response=-1;
+            }
+
+        }
+		else
+		{
+                $response=-1;
+		}
+		desconectar($conexion); //desconectamos la base de datos
+		return ($response); //devolvemos el array
+
+    }
 }
 
- //$G = new Gimnasio();
- //$Gyms=$G->getSucursalesByGym(2,0);
- //echo json_encode($Gyms);
+ $G = new Gimnasio();
+ $Gyms=$G->getSucursalesByGym(1,0);
+ echo json_encode($Gyms);
 
 ?>
