@@ -41,7 +41,7 @@ class UsuarioEnforma{
                         $item["Nombre"]=$row["Nombre"];
                         $item["Apellidos"]=$row["Apellidos"];
                         $item["Correo"]=$row["Correo"];
-                        $item["idFacebook"]=$row["IdFacebook"];
+                        $item["IdFacebook"]=$row["IdFacebook"];
                         $item["Password"]=$row["Password"];
                         $item["Estatus"]=$row["Estatus"];
                         $response["Usuario"]=$item;
@@ -99,7 +99,7 @@ class UsuarioEnforma{
                         $item["Nombre"]=$row["Nombre"];
                         $item["Apellidos"]=$row["Apellidos"];
                         $item["Correo"]=$row["Correo"];
-                        $item["idFacebook"]=$row["IdFacebook"];
+                        $item["IdFacebook"]=$row["IdFacebook"];
                         $contrasena=$row["Password"];
                         $item["Estatus"]=$row["Estatus"];
                         if ($item["Estatus"]==0){
@@ -185,7 +185,7 @@ class UsuarioEnforma{
                             $item["Nombre"]=$row["Nombre"];
                             $item["Apellidos"]=$row["Apellidos"];
                             $item["Correo"]=$row["Correo"];
-                            $item["idFacebook"]=$row["IdFacebook"];
+                            $item["IdFacebook"]=$row["IdFacebook"];
                             $contrasena=$row["Password"];
                             $item["Estatus"]=$row["Estatus"];
                             if ($item["Estatus"]==0){
@@ -265,7 +265,7 @@ class UsuarioEnforma{
                         $item["Nombre"]=$row["Nombre"];
                         $item["Apellidos"]=$row["Apellidos"];
                         $item["Correo"]=$row["Correo"];
-                        $item["idFacebook"]=$row["IdFacebook"];
+                        $item["IdFacebook"]=$row["IdFacebook"];
                         $contrasena=$row["Password"];
                         $item["Estatus"]=$row["Estatus"];
                         if ($item["Estatus"]==0){
@@ -326,7 +326,7 @@ class UsuarioEnforma{
 		$conexion = obtenerConexion();
 		mysqli_set_charset($conexion, "utf8"); //Formato de datos utf8
 
-        $sql="select * from UsuarioEnforma where idFacebook='$facebook'";
+        $sql="select * from UsuarioEnforma where IdFacebook='$facebook'";
 
 		if($result = mysqli_query($conexion, $sql))
 		{
