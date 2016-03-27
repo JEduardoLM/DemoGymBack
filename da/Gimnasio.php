@@ -239,8 +239,8 @@ class Gimnasio{
     }
 }
 
- $G = new Gimnasio();
- $Gyms=$G->getSucursalesByGym(1,0);
- echo json_encode($Gyms);
+ //$G = new Gimnasio();
+ //$Gyms=$G->getSucursalesByGym(1,0);
+ //echo json_encode($Gyms);
 
 ?>

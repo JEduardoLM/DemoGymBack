@@ -72,6 +72,133 @@ class UsuarioEnforma{
 		return  ($response); //devolvemos el array
 	}
 
+    //******************************************************************************************************************************************************
+	//******************************************************************************************************************************************************
+	//******************************************************************************************************************************************************
+
+	function getUsuarioEnformaCodigo($codigo, $gimnasio, $sucursal) //Esta función permite consultar la información de un Usuario_Enforma por codigo
+	{												  // en caso, de que el id sea cero, el sistema regresará todos los Usuarios ENFORMA
+
+		//Creamos la conexión a la base de datos
+        $conexion = obtenerConexion();
+
+        if ($conexion){
+
+            mysqli_set_charset($conexion, "utf8"); //Formato de datos utf8
+
+            $sql="select * from UsuarioEnforma where CodigoEnforma='$codigo'";
+
+            if($result = mysqli_query($conexion, $sql))
+            {
+                if($result!=null){
+                    if ($result->num_rows>0){
+                            while($row = mysqli_fetch_array($result))
+                            {
+                                $item = array();
+                                $item["UsuarioEnformaId"]=$row["Id"];
+                                $idUsuario=$item["UsuarioEnformaId"];
+
+                                $item["CodigoEnforma"]=$row["CodigoEnforma"];
+                                $item["Nombre"]=$row["Nombre"];
+
+                                $item["Apellidos"]=$row["Apellidos"];
+                                if ($item["Apellidos"]==NULL){$item["Apellidos"]='';}
+
+                                $item["Correo"]=$row["Correo"];
+                                if ($item["Correo"]==NULL){$item["Correo"]='';}
+
+                                $item["IdFacebook"]=$row["IdFacebook"];
+                                if ($item["IdFacebook"]==NULL){$item["IdFacebook"]='';}
+
+                                $item["Estatus"]=$row["Estatus"];
+
+                                $item["estatusDisposicion"]=0; // Se encontró el usuario y no está asociado
+                                $item["UsuarioGymId"]=0;
+                                $item["SocioId"]=0;
+                                $item["Sucursal"]="";
+
+                                $success=0;
+                                $message="El usuario no se encuentra registrado en el gimnasio";
+
+
+                               // array_push($response["Usuarios"], $item);
+                                if ($gimnasio!=NULL)
+                                {
+                                    $sql2="SELECT UG_Id, idGym, IdUsuario, UG.Estatus, So_Id, Id_Sucursal
+                                    FROM UsuarioGimnasio UG left Join  Socio S on UG_Id=Id_UsuarioGym where IdRol=1 and idGym=$gimnasio and IdUsuario=$idUsuario;";
+
+                                    if($result2 = mysqli_query($conexion, $sql2)){
+
+                                        if($result2!=null){
+
+                                            if ($result2->num_rows>0){
+
+                                                while($row2 = mysqli_fetch_array($result2)){ //Si ingresa aquí, significa, que el usuario ya se encuentra registrado en el gimnasio indicado
+                                                    $item["UsuarioGymId"]=$row2["UG_Id"];
+                                                    $item["SocioId"]=$row2["So_Id"];
+                                                    if ($row2["Id_Sucursal"]==$sucursal){ //Si ingresa aquí, significa, que el usuario, ya se encuentra asociado a la sucursal en la que estamos trabajando
+                                                        $item["Sucursal"]=$row2["Id_Sucursal"];
+                                                        if ($row2["Estatus"]==1){ //El usuario se encuentra activo dentro de la misma sucursal
+                                                            $item["estatusDisposicion"]=5; // El usuario ya se encuentra asociado en la socursal indicada
+                                                            $success=5;
+                                                            $message='El usuario ya se encuentra registrado en la sucursal';
+                                                        }
+                                                        else{
+                                                            $item["estatusDisposicion"]=6; // El usuario ya se encuentra asociado en la socursal indicada, pero se encuentra dado de baja
+                                                            $success=6;
+                                                            $message='El usuario ya se encuentra registrado en la sucursal, pero se encuentra dado de baja';
+                                                        }
+                                                    }
+                                                    else{ //Si no es la misma sucursal, hay que regresar la sucursal, e indicar cual es su actual sucursal
+                                                        $item["Sucursal"]=$row2["Id_Sucursal"];
+                                                        $item["estatusDisposicion"]=9; // El usuario ya se encuentra asociado al gimnasio, pero a otra sucursal
+                                                        $success=9;
+                                                        $message='El usuario se encuentra registrado en una sucursal diferente';
+
+                                                    }
+
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                $response["Usuario"]=$item;
+                                $response["success"]=$success;
+                                $response["message"]=$message;
+
+                            }
+
+                    }
+                    else{
+                        $response["success"]=1;
+                        $response["message"]='No se encontró UsuarioEnforma con el código indicado';
+                    }
+
+                }
+            else
+                {
+                    $response["success"]=1;
+                    $response["message"]='No se encontró UsuarioEnforma con el código indicado';
+                }
+            }
+            else
+            {
+                $response["success"]=4;
+                $response["message"]='Se presentó un error al ejecutar la consulta';
+            }
+
+            desconectar($conexion); //desconectamos la base de datos
+        }
+        else
+        {
+            $response["success"]=3;
+			$response["message"]='Se presentó un error al realizar la conexión con la base de datos';
+
+        }
+		return  ($response); //devolvemos el array
+	}
+
 	//******************************************************************************************************************************************************
 	//******************************************************************************************************************************************************
 	//******************************************************************************************************************************************************
@@ -361,7 +488,7 @@ class UsuarioEnforma{
 	//******************************************************************************************************************************************************
 	//******************************************************************************************************************************************************
 
-        function validarCorreoRepetido($correo)
+    function validarCorreoRepetido($correo)
     {
 
 		//Creamos la conexión a la base de datos
@@ -482,12 +609,9 @@ class UsuarioEnforma{
 
 }
 
-    //$UE=new UsuarioEnforma();
-	//echo json_encode($UE->getUsuarioEnformaByID(1));
-	//echo json_encode($UE->buscarUsuarioEnformaCorreoPassword("PRUEBA311","PRUEBA"));
-    //echo json_encode($UE->buscarUsuarioEnformaFacebook("2387320587iutyoiuy387@facebook.com14"));
-	//echo json_encode($UE->addUsuarioEnforma('NUEVO Usuario TEST ', 'Romero Luna','TEST.NUEVO.RL@correo.com',NULL, NULL));
-    //echo json_encode($UE->validarFacebookRepetido('face1',0));
+   // $UE=new UsuarioEnforma();
+   // $usuario = $UE->getUsuarioEnformaCodigo('kjkjhkhj',6,3);
+   // echo json_encode($usuario);
 
 
 

@@ -17,13 +17,19 @@
 	$idFacebookBl= $data["IdFacebook"];
 	$passwordBl= $data["Password"];
 	$estatusBl= $data["Estatus"];
+    $codigoEnformaBl= $data["codigoEnforma"];
+    $gimnasioBl= $data["gimansio"];
+    $sucursalBl= $data["sucursal"];
 
-     //$metodoBl='logueoFacebook';
+     $metodoBl='getUsuarioEnformaByCodigo';
      //$correoBl='scorres5o@correo.com';
      //$idFacebookBl='li.eduardo.lm@gmail.com';
      //$nombreBl='Usuario de prueba BL';
      //$apellidosBl='LM TEST Bl';
 	 //$passwordBl='correo';
+     $codigoEnformaBl='EDU0001';
+     $gimnasioBl=2;
+     $sucursalBl=0;
 
     function validarTextoNulo($Texto,$Valor){
 		if ($Texto!==NULL){
@@ -140,6 +146,21 @@
 		return $respuesta;
 	}
 
+//***********************************************************************************
+
+	function getUsuarioEnformaByCodigo($codigo,$gimnasio,$sucursal){
+		$codigoValidado= validarTextoNulo($codigo, "El código del usuario");
+		if ($codigoValidado["success"]==1){
+				$usuario = new UsuarioEnforma();
+				$respuesta= $usuario->getUsuarioEnformaCodigo($codigo,$gimnasio,$sucursal);
+		}
+		else{$respuesta=$correoValidado;}
+		return $respuesta;
+	}
+
+
+
+
 //******************************************************************************************************************************************
 //******************************************************************************************************************************************
 //******************************************************************************************************************************************
@@ -162,12 +183,15 @@
             if ($passwordBl!==NULL){$passwordBl=trim($passwordBl);}
 			$response=nuevoUsuarioEnforma($nombreBl,$apellidosBl,$correoBl,$idFacebookBl,$passwordBl);
 		break;
+
+        case "getUsuarioEnformaByCodigo":
+            $response=getUsuarioEnformaByCodigo($codigoEnformaBl,$gimnasioBl, $sucursalBl);
+        break;
 		default:
 		{
 			$response["success"]=2;
 			$response["message"]='El método indicado no se encuentra registrado';
 		}
-
 	}
 
 	echo json_encode ($response)

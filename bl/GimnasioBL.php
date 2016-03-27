@@ -15,7 +15,7 @@
 
 
 	//$metodoBl="getSucursalesByGym";
-	//$idGimnasioBl='';
+	//$idGimnasioBl=1;
     //$idUsuarioBl=2;
 
 
@@ -74,9 +74,6 @@
 	}
 
 	echo json_encode ($response)
-
-
-
 
 
 ?>

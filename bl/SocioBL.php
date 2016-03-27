@@ -14,6 +14,7 @@
     require('../da/Socio.php'); //Se requiere el archivo de acceso a la base de datos
     require('../da/Rutina.php'); //Se requiere el archivo de acceso a la base de datos
     require('../da/Subrutina.php'); //Se requiere el archivo de acceso a la base de datos
+    require('../da/Serie.php'); //Se requiere el archivo de acceso a la base de datos
   //  require('../da/Gimnasio.php'); //Se requiere el archivo de acceso a la base de datos
 
 
@@ -26,13 +27,27 @@
     $idSucursalBl= $data["idSucursal"];
 
 
+    $IdSerieBl=$data["IdSerie"];
+    $PesoNuevoBl=$data["PesoNuevo"];
+    $TipoPesoBl=$data["TipoPeso"];
+    $idEjercicioBl=$data["IdEjercicio"];
+    $circuitoColorBl=$data["CircuitoColor"];
 
-	     //$metodoBl="AsociarUsuarioAGimnasio";
+
+
+	     $metodoBl="obtenerSociosBySucursal";
          //$idUsuarioBl='8';
          //$idGimnasioBl='2';
-        // $idSocioBl=2;
-        // $idRutinaBl=3;
-        //$idSucursalBl=3;
+         //$idSocioBl=2;
+         //$idRutinaBl=3;
+         $idSucursalBl=3;
+
+        //$IdSerieBl=1;
+        //$PesoNuevoBl=100;
+        //$TipoPesoBl=1;
+        //$idEjercicioBl=1;
+        //$circuitoColorBl=0;
+
 
 	function getUsuarioGymByIDU($idUsuario){
 
@@ -209,8 +224,6 @@
         return $response;
     }
 
-
-
     function AsociarUsuarioAGym($idUsuario, $idGimnasio, $idSucursal){
 
      if ($idUsuario!=NULL and $idUsuario>0){  //Validamos que el id envíado sea diferente de NULO
@@ -282,6 +295,64 @@
 
 }
 
+    function actualizarPesoEnSerie($IdSerie,$PesoNuevo,$TipoPeso,$idEjercicio, $circuitoColor){
+
+        if ($IdSerie!=NULL and $IdSerie>0 ){
+            $serie= new Serie();
+            $response["Serie"] = $serie->updatePesoEnSerie($IdSerie,$PesoNuevo,$TipoPeso) ;
+
+            if ($response["Serie"]["success"]==0){
+                $subrutina = new Subrutina();
+                $response["Ejercicio"]=$subrutina->getDetalleEjercicioByID($idEjercicio, $circuitoColor);
+                if ($response["Ejercicio"]["success"]==0){
+                    $response["success"]=0;
+			        $response["message"]='El peso se registró correctamente';
+                }
+                else
+                {
+                     $response["success"]=8;
+			         $response["message"]='El pesos se registró correctamente, pero no se pudo obtener el ejercicio actualizado';
+
+                }
+            }
+            else
+            {
+                $response["success"]=7;
+			    $response["message"]='Se presentó un error al almacenar el peso';
+
+            }
+
+        }
+        else
+        {
+            $response["success"]=6;
+			$response["message"]='El id de la serie debe ser diferente de nulo y mayor a cero';
+        }
+        return $response;
+    }
+
+    function ObtenerSociosBySucursal($idSucursal){
+        if ($idSucursal!=NULL){  //Validamos que el id envíado sea diferente de NULO
+
+            if (is_numeric($idSucursal)){
+                $socio = new Socio();
+                $response= $socio->getSociosBySucursalId($idSucursal);
+
+            }
+            else
+            {
+            $response["success"]=5;
+			$response["message"]='El id de la sucursal debe ser un dato numérico';
+            }
+        }
+        else
+        {
+            $response["success"]=6;
+			$response["message"]='El id de la sucursal debe ser diferente de NULO';
+        }
+        return $response;
+    }
+
 	switch ($metodoBl) {
 		case "obtenerGimnasiosDeUsuario": // Mandar cero, para obtener todos los aparatos, o el id del aparatado especifico.
 			$response=getUsuarioGymByIDU($idUsuarioBl);
@@ -301,11 +372,14 @@
         case "ObtenerSubrutinasByIdUIdGymCompleta":
             $response=getSubrutinasByIdUsuarioIdGymCompleta($idUsuarioBl, $idGimnasioBl);
 		break;
-        case "AsociarUsuarioAGimnasio":
+        case "asociarUsuarioAGimnasio":
             $response=AsociarUsuarioAGym($idUsuarioBl, $idGimnasioBl, $idSucursalBl);
 		break;
-        case "ObtenerSociosBySucursal":
+        case "obtenerSociosBySucursal":
             $response=ObtenerSociosBySucursal($idSucursalBl);
+		break;
+        case "actulizarPesoEnSerie":
+            $response=actualizarPesoEnSerie($IdSerieBl,$PesoNuevoBl,$TipoPesoBl, $idEjercicioBl,$circuitoColorBl);
 		break;
 		default:
 		{
@@ -315,7 +389,7 @@
 
 	}
 
-	echo json_encode ($response)
+    echo json_encode ($response)
 
 
 

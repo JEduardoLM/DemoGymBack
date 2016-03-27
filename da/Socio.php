@@ -71,13 +71,14 @@ class Socio{
 //********************************************************************************************************************
 
 
-	function getSociosBySucursalId($idSucursal){ // Esta función nos regresa los socios que esten asociados a un usuario/gymnasio (en teoría sólo debe haber un registro así)
+function getSociosBySucursalId($idSucursal){ // Esta función nos regresa los socios que esten asociados a un usuario/gymnasio (en teoría sólo debe haber un registro así)
 		//Creamos la conexión con la función anterior
 		$conexion = obtenerConexion();
 
+        if ($conexion){
 		mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
 		$sql= "SELECT ue.Id as UsuarioEnformaId, ug.UG_ID as UsuarioGymId, s.So_Id as SocioId, CodigoEnforma, ue.Nombre as NombreUsuario, Apellidos, Correo, IdFacebook, s.Estatus, ug.IdRol, r.Nombre as NombreRol, Id_Sucursal
-	               FROM UsuarioEnforma ue join UsuarioGimnasio ug on ue.id=ug.idUsuario join Rol r on ug.IdRol=r.R_id join socio s on ug.UG_Id=s.Id_UsuarioGym where s.Id_Sucursal=$idSucursal";
+	               FROM UsuarioEnforma ue join UsuarioGimnasio ug on ue.id=ug.idUsuario join Rol r on ug.IdRol=r.R_id join Socio s on ug.UG_Id=s.Id_UsuarioGym where s.Id_Sucursal=$idSucursal";
 
             if($result = mysqli_query($conexion, $sql))
             {
@@ -115,29 +116,36 @@ class Socio{
 
                             array_push($response["socios"], $item);
                         }
-                        $response["success"]=1;
+                        $response["success"]=0;
                         $response["message"]='Consulta exitosa';
                     }
                     else{
-                        $response["success"]=0;
+                        $response["success"]=1;
                         $response["message"]='No existe un socio registrado del usuario en el gimnasio indicado';
                     }
 
                 }
                 else
                     {
-                        $response["success"]=0;
+                        $response["success"]=1;
                         $response["message"]='No existe un socio registrado del usuario en el gimnasio indicado';
                     }
             }
             else
             {
-                $response["success"]=0;
+                $response["success"]=4;
                 $response["message"]='Se presento un error al ejecutar la consulta';
             }
 
 
 		desconectar($conexion); //desconectamos la base de datos
+        }
+    else
+    {
+        $response["success"]=3;
+        $response["message"]='Se presento un error al realizar la conexión';
+
+    }
 		return ($response); //devolvemos el array
 
     }
@@ -165,7 +173,7 @@ function asociarSocioGimnasio($idUsuario, $idGimnasio, $idSucursal){
 
 			if($result = mysqli_query($conexion, $sql)){
 
-                $idUsuarioGym=mysqli_insert_id($conexion);
+                $idUsuarioGym=mysqli_insert_id($conexion); //Obtenemos el id del registro insertado
 
                 $hoy = date("Y-m-d");
 
@@ -184,7 +192,7 @@ function asociarSocioGimnasio($idUsuario, $idGimnasio, $idSucursal){
                     $response["success"]=5;
 					$response["message"]='No se logró registrar correctamente el socio';
                     /* Revertir */
-                    mysqli_rollback($link);
+                    mysqli_rollback($conexion);
                 }
             }
 			else {
@@ -192,7 +200,7 @@ function asociarSocioGimnasio($idUsuario, $idGimnasio, $idSucursal){
 					$response["success"]=4;
 					$response["message"]='No se logró registrar correctamente el UsuarioGym';
                     /* Revertir */
-                    mysqli_rollback($link);
+                    mysqli_rollback($conexion);
 
 				}
 		  desconectar($conexion); //desconectamos la base de datos
