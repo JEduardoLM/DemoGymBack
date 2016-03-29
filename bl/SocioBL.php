@@ -26,6 +26,10 @@
     $idRutinaBl = $data["idRutina"];
     $idSucursalBl= $data["idSucursal"];
 
+	$idUsuarioGymBl = $data["idUsuarioGimnasio"];
+    $estatusBl= $data["estatus"];
+
+
 
     $IdSerieBl=$data["IdSerie"];
     $PesoNuevoBl=$data["PesoNuevo"];
@@ -35,18 +39,22 @@
 
 
 
-	     $metodoBl="obtenerSociosBySucursal";
+
+	     $metodoBl="actualizarSucursalSocio";
          //$idUsuarioBl='8';
          //$idGimnasioBl='2';
-         //$idSocioBl=2;
+         $idSocioBl=7;
          //$idRutinaBl=3;
-         $idSucursalBl=3;
+         //$idSucursalBl=3;
 
         //$IdSerieBl=1;
         //$PesoNuevoBl=100;
         //$TipoPesoBl=1;
         //$idEjercicioBl=1;
         //$circuitoColorBl=0;
+        $idUsuarioGymBl=7;
+        $idSucursalBl=2;
+        $estatusBl=1;
 
 
 	function getUsuarioGymByIDU($idUsuario){
@@ -293,7 +301,7 @@
         }
         return $response;
 
-}
+    }
 
     function actualizarPesoEnSerie($IdSerie,$PesoNuevo,$TipoPeso,$idEjercicio, $circuitoColor){
 
@@ -353,6 +361,58 @@
         return $response;
     }
 
+    function actualizarEstatusSocio($idUsuarioGym, $estatus, $idSucursal){
+
+        if (is_numeric($idUsuarioGym) and $idUsuarioGym>0){
+            if (is_numeric($estatus) and $estatus<2){
+                if (is_numeric($idSucursal) and $idSucursal>0){
+                    $socio = new Socio();
+                    $response= $socio->modificarEstatusSocio($idUsuarioGym, $estatus,$idSucursal);
+                }
+                else
+                {
+                    $response["success"]=7;
+			        $response["message"]='El nuevo estatus no es un dato valido';
+                }
+            }
+            else
+            {
+                $response["success"]=7;
+			    $response["message"]='El nuevo estatus no es un dato valido';
+            }
+        }
+        else
+        {
+            $response["success"]=6;
+			$response["message"]='El Id del usuario gimnasio debe ser un dato valido';
+        }
+
+
+        return $response;
+    }
+
+    function actualizarSucursalSocio($idSocio, $idSucursal){
+        if (is_numeric($idSocio) and $idSocio>0){
+            if (is_numeric($idSucursal) and $idSucursal>0){
+                    $socio = new Socio();
+                    $response= $socio->actualizarSucursalSocio($idSocio, $idSucursal);
+            }
+            else
+            {
+                    $response["success"]=7;
+			        $response["message"]='El id de la sucursal debe ser un dato valido';
+            }
+
+        }
+        else
+        {
+            $response["success"]=6;
+			$response["message"]='El Id del socio debe ser un dato valido';
+        }
+
+        return $response;
+    }
+
 	switch ($metodoBl) {
 		case "obtenerGimnasiosDeUsuario": // Mandar cero, para obtener todos los aparatos, o el id del aparatado especifico.
 			$response=getUsuarioGymByIDU($idUsuarioBl);
@@ -381,6 +441,15 @@
         case "actulizarPesoEnSerie":
             $response=actualizarPesoEnSerie($IdSerieBl,$PesoNuevoBl,$TipoPesoBl, $idEjercicioBl,$circuitoColorBl);
 		break;
+        case "actualizarEstatusSocio":
+            $response=actualizarEstatusSocio($idUsuarioGymBl, $estatusBl, $idSucursalBl);
+		break;
+
+        case "actualizarSucursalSocio":
+            $response=actualizarSucursalSocio($idSocioBl, $idSucursalBl);
+		break;
+
+
 		default:
 		{
 			$response["success"]=2;

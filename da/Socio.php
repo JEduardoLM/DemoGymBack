@@ -64,8 +64,6 @@ class Socio{
 		return ($response); //devolvemos el array
 	}
 
-
-
 //********************************************************************************************************************
 //********************************************************************************************************************
 //********************************************************************************************************************
@@ -121,14 +119,14 @@ function getSociosBySucursalId($idSucursal){ // Esta función nos regresa los so
                     }
                     else{
                         $response["success"]=1;
-                        $response["message"]='No existe un socio registrado del usuario en el gimnasio indicado';
+                        $response["message"]='No existen socios registrados en la sucursal';
                     }
 
                 }
                 else
                     {
                         $response["success"]=1;
-                        $response["message"]='No existe un socio registrado del usuario en el gimnasio indicado';
+                        $response["message"]='No existen socios registrados en la sucursa';
                     }
             }
             else
@@ -213,11 +211,119 @@ function asociarSocioGimnasio($idUsuario, $idGimnasio, $idSucursal){
 		return  ($response); //devolvemos el array
 
     }
+
+//********************************************************************************************************************
+//********************************************************************************************************************
+//********************************************************************************************************************
+
+function modificarEstatusSocio($idUsuarioGym, $estatus,$sucursal){
+    //Creamos la conexión con la función anterior
+	$conexion = obtenerConexion();
+    mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
+
+    if ($conexion){
+
+    /* deshabilitar autocommit para poder hacer un rollback*/
+    mysqli_autocommit($conexion, FALSE);
+
+    //Lo primero que haremos será obtener el id del socio, de acuerdo con el idUsuarioGym que se haya enviado
+
+	$sql="SELECT So_Id, Id_UsuarioGym FROM Socio where Id_UsuarioGym=$idUsuarioGym;";
+     if($result = mysqli_query($conexion, $sql)){ // Ejecutamos la consulta para obtener el id del socio
+          while($row = mysqli_fetch_array($result)){ //Obtenemos los resultados
+            $idSocio= $row["So_Id"];
+          }
+         $sql2="UPDATE UsuarioGimnasio SET `Estatus`=$estatus WHERE `UG_Id`=$idUsuarioGym;";
+         if($result2 = mysqli_query($conexion, $sql2)){ //Ejecutamos la sentencia para actualizar el estatus del gimnasio
+
+             //Si se actualizó correctamente el estatus del UsuarioGimnasio, procederemos a actualizar el estatus del Socio
+            $sql3="UPDATE `Socio` SET `Estatus`=$estatus WHERE `So_Id`=$idSocio;";
+            if($result3 = mysqli_query($conexion, $sql3)){ //Ejecutamos la sentencia para actualizar el estatus del socio
+                    mysqli_commit($conexion);
+                    $response["Socios"]=$this->getSociosBySucursalId($sucursal);
+                    $response["success"]=0;
+                    $response["message"]='Se ha modificado correctamente el estatus del socio';
+
+                }
+                else{
+                    mysqli_rollback($conexion);
+                    $response["success"]=5;
+                    $response["message"]='Se presentó un error al actualizar el estatus del Socio';
+                }
+         }
+         else //Si falla la consulta, hacemos un rollBack;
+         {
+
+             mysqli_rollback($conexion);
+             $response["success"]=4;
+             $response["message"]='Se presentó un error al actualizar el estatus del UsuarioGimnasio';
+         }
+
+     }
+     else{ // Se presentó un error al generar la consulta del id del socio
+        $response["success"]=1;
+        $response["message"]='Se presentó un error al consultar el id del socio';
+     }
+
+
+    desconectar($conexion);
+    }
+    else
+    {
+        $response["success"]=3;
+        $response["message"]='Se presentó un error en la conexión con la base de datos';
+    }
+	return  ($response); //devolvemos el array
+
 }
 
 
+function actualizarSucursalSocio($idSocio, $idSucursal){
+
+    //Creamos la conexión
+	$conexion = obtenerConexion();
+    mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
+
+    if ($conexion){ //Verificamos la conexión, en caso de fallar regresamos el error de conexión NO EXITOSA
+
+        /* deshabilitar autocommit para poder hacer un rollback*/
+        mysqli_autocommit($conexion, FALSE);
+
+        //Una vez que se ha deshabilitado el autocomit, procedemos con las consultas para actualizar la sucursal del socio
+
+        $sql="UPDATE `Socio` SET `Id_Sucursal`=$idSucursal WHERE `So_Id`=$idSocio;";
+        if($result = mysqli_query($conexion, $sql)){
+            mysqli_commit($conexion);
+            $response["Socios"]=$this->getSociosBySucursalId($idSucursal);
+            $response["success"]=0;
+            $response["message"]='Se ha actualizado correctamente la sucursal del socio';
+
+        }
+            else
+        {
+                $response["success"]=4;
+                $response["message"]='Se presentó un error al actualizar la sucursal del socio';
+        }
+
+        desconectar($conexion);
+    }
+    else
+    {
+        $response["success"]=3;
+        $response["message"]='Se presentó un error en la conexión con la base de datos';
+    }
+	return  ($response); //devolvemos el array
+
+}
+
+}
+
+
+
+
+
 //$UG = new Socio();
-//$UGs=$UG->getSociosBySucursalId(2);
+//$UGs=$UG->actualizarSucursalSocio(7,2);
 //echo json_encode ($UGs);
 
 

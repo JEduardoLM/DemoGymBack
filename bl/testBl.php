@@ -40,7 +40,7 @@
          //$idGimnasioBl='2';
          //$idSocioBl=2;
          //$idRutinaBl=3;
-         $idSucursalBl=1;
+         $idSucursalBl=3;
 
         //$IdSerieBl=1;
         //$PesoNuevoBl=100;
@@ -389,7 +389,7 @@
 
 	}
 
-	echo json_encode ($response)
+    echo json_encode ($response)
 
 
 
