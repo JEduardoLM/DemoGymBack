@@ -1,48 +1,51 @@
 <?php
 require_once('conexion.php');
 
-class Subrutina{
+class Rutina{
 
-	function getsubrutinaByIdRutina($idRutina){ // Esta función nos regresa la subrutina de una rutina especifica (dividida por días)
+	function getRutinaByIdSocio($idSocio){ // Esta función nos regresa la rutina activa de un socio especifico
 		//Creamos la conexión con la función anterior
 		$conexion = obtenerConexion();
 
 		mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
 
-		if ($idRutina!=0)
+		if ($idSocio!=0)
 		{
-			$sql= "SELECT SR_ID, Orden, IdRutina, Nombre FROM Subrutina where idRutina=$idRutina order by Orden ";
+			$sql= "SELECT  R_ID, Nombre, FechaInicio, NumeroSemanas, Estatus, Objetivo, id_Socio, id_Instructor FROM Rutina where Estatus=1  and id_Socio=$idSocio order  by FechaInicio desc  LIMIT 1";
 
             if($result = mysqli_query($conexion, $sql))
             {
                 if($result!=null){
                     if ($result->num_rows>0){
 
-                        $response["subrutinas"] = array();
+                        $response["Rutina"] = array();
                         while($row = mysqli_fetch_array($result))
                         {
                             $item = array();
-                            $item["Id"]=$row["SR_ID"];
-                            $item["Orden"]=$row["Orden"];
-                            $item["IdRutina"]=$row["IdRutina"];
+                            $item["Id"]=$row["R_ID"];
                             $item["Nombre"]=$row["Nombre"];
+                            $item["FechaInicio"]=$row["FechaInicio"];
+                            $item["NumeroSemanas"]=$row["NumeroSemanas"];
+                            $item["Estatus"]=$row["Estatus"];
+                            $item["Objetivo"]=$row["Objetivo"];
+                            $item["id_Socio"]=$row["id_Socio"];
+                            $item["id_Instructor"]=$row["id_Instructor"];
 
-
-                            array_push($response["subrutinas"], $item);
+                            array_push($response["Rutina"], $item);
                         }
                         $response["success"]=1;
                         $response["message"]='Consulta exitosa';
                     }
                     else{
                         $response["success"]=0;
-                        $response["message"]='La rutina no cuenta con una subrutina definida';
+                        $response["message"]='El socio no cuenta con una rutina activa';
                     }
 
                 }
                 else
                     {
                         $response["success"]=0;
-                        $response["message"]='La rutina no cuenta con una subrutina definida';
+                        $response["message"]='El socio no cuenta con una rutina activa';
                     }
             }
             else
@@ -55,490 +58,194 @@ class Subrutina{
 		else
 		{
                 $response["success"]=0;
-                $response["message"]='El id de la subrutina debe ser diferente de cero';
+                $response["message"]='El id del usuario debe ser diferente de cero';
 		}
 		desconectar($conexion); //desconectamos la base de datos
 		return ($response); //devolvemos el array
 	}
 
-    function getSubRutinaByIdIdUsuarioIdGym($idUsuario,$idGym){// Esta función nos regresa las diferentes subrutinas, de un socio especifico
-		//Creamos la conexión con la función anterior
-		$conexion = obtenerConexion();
+    //********************************************************************************************************************
+    //********************************************************************************************************************
+    //********************************************************************************************************************
 
-		mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
+    function duplicarRutina($idRutina, $idSocio, $fecha, $numeroSemanas, $objetivo, $idInstructor){
 
-		if ($idUsuario!=0)
-        {
-            if ($idGym!=0){
-                $sql= "SELECT SR_ID, Orden, IdRutina, Nombre
-                        FROM Subrutina WHERE idRutina =
-                            (SELECT R_ID FROM Rutina WHERE Estatus =1 AND id_Socio =
-                                (SELECT UG_Id FROM UsuarioGimnasio JOIN Socio ON UG_Id = Id_UsuarioGym WHERE
-                                UsuarioGimnasio.Estatus =1 AND Socio.Estatus =1 AND IdUsuario =$idUsuario AND IdGym =$idGym LIMIT 1 )
-                            ORDER BY FechaInicio DESC  LIMIT 1 )
-                        ORDER BY Orden
-                        ";
+        //Creamos la conexión
+        $conexion = obtenerConexion();
 
-                if($result = mysqli_query($conexion, $sql))
-                {
-                    if($result!=null){
-                        if ($result->num_rows>0){
+        mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
 
-                            $response["subrutinas"] = array();
-                            while($row = mysqli_fetch_array($result))
+        if ($conexion){ //Verificamos la conexión, en caso de fallar regresamos el error de conexión NO EXITOSA
+
+            /* deshabilitar autocommit para poder hacer un rollback*/
+            mysqli_autocommit($conexion, FALSE);
+
+            //Lo primero que vamos a hacer es duplicar la rutina
+
+            if($objetivo==NULL or $objetivo==''){
+                $sql="INSERT INTO Rutina
+                        SELECT NULL as R_ID, Nombre, '$fecha' as FechaInicio, '$numeroSemanas' NumeroSemanas, 1 as Estatus, Objetivo, '$idSocio' as id_Socio,NULL as id_Sucursal, '$idInstructor' as Id_Instructor FROM Rutina
+                        where R_ID=$idRutina;";
+            }
+            else{
+                $sql="INSERT INTO Rutina
+                    SELECT NULL as R_ID, Nombre, '$fecha' as FechaInicio, '$numeroSemanas' NumeroSemanas, 1 as Estatus, '$objetivo' as Objetivo, '$idSocio' as id_Socio,NULL as id_Sucursal, '$idInstructor' as Id_Instructor FROM Rutina
+                    where R_ID=$idRutina;";
+            }
+
+            echo '*******'.$sql.'*****************';
+                if($result = mysqli_query($conexion, $sql)){ //Ejecutamos la consulta para duplicar la rutina y verificamos si se ejecutó correctamente
+
+                        $idRutinaNueva=mysqli_insert_id($conexion);
+
+                        //Procedemos a hacer una consulta, para obtener los días de la rutina a clonar, y poder duplicar cada uno de los días.
+                        $sql2="SELECT SR_ID, Orden, IdRutina, Nombre  FROM Subrutina where IdRutina = $idRutina;";
+
+                        if($result2 = mysqli_query($conexion, $sql2)){
+                            $seDuplicoTodo=1;
+                            while($row = mysqli_fetch_array($result2)) //Recorremos cada uno de los días, para proceder a dar de alta cada registro.
                             {
-                                $item = array();
-                                $item["Id"]=$row["SR_ID"];
-                                $item["Orden"]=$row["Orden"];
-                                $item["IdRutina"]=$row["IdRutina"];
-                                $item["Nombre"]=$row["Nombre"];
 
+                                $idSubrutinaOrigen=$row["SR_ID"];
+                                $orden=$row["Orden"];
+                                $nombreSubrutina=$row["Nombre"];
 
-                                array_push($response["subrutinas"], $item);
-                            }
-                            $response["success"]=1;
-                            $response["message"]='Consulta exitosa';
-                        }
-                        else{
-                            $response["success"]=0;
-                            $response["message"]='No se encontró una rutina para el usuario y gimnasio indicado';
-                        }
+                                $sqlSubrutina="INSERT INTO `Subrutina` (`Orden`, `IdRutina`, `Nombre`) VALUES ('$orden', '$idRutinaNueva', '$nombreSubrutina');" ;
 
-                    }
-                    else
-                        {
-                            $response["success"]=0;
-                            $response["message"]='No se encontró una rutina para el usuario y gimnasio indicado';
-                        }
-                }
-                else
-                {
-                    $response["success"]=0;
-                    $response["message"]='Se presento un error al ejecutar la consulta';
-                }
+                                if($resultSubrutina = mysqli_query($conexion, $sqlSubrutina)){
+                                    $idSubrutinaNueva=mysqli_insert_id($conexion); // Si la subrutina se insertó correctamente procedemos a obtener el Id de la nueva subrutina
 
-            }
-            else
-            {
-                $response["success"]=0;
-                $response["message"]='El id del gimnasio debe ser diferente de cero';
+                                    //Una vez que tenemos la subrutina, vamos a proceder a duplicar los registros de la tabla de cardio.
+                                    $sqlCardio="INSERT INTO SubRutinaEjercicioCardio
+                                        (SELECT NULL as SEC_ID, '$idSubrutinaNueva' as Id_Subrutina, Id_EjercicioCardio, Tiempototal, Velocidadpromedio, TipoDeVelocidad, DistanciaTotal, TipoDistancia, Ritmocardiaco, Nivel, Observaciones, Orden FROM SubRutinaEjercicioCardio where Id_Subrutina=$idSubrutinaOrigen);";
 
-            }
-        }
-		else
-		{
-            $response["success"]=0;
-            $response["message"]='El id del usuario debe ser diferente de cero';
+                                    if($resultCardio = mysqli_query($conexion, $sqlCardio)){
 
-		}
-		desconectar($conexion); //desconectamos la base de datos
-		return ($response); //devolvemos el array
-
-    }
-
-    //***********************************************************************************************************************************
-
-     function getSubRutinaByIdIdUIdGymCompleta($idUsuario,$idGym){// Esta función nos regresa las diferentes subrutinas, de un socio especifico
-		//Creamos la conexión con la función anterior
-
-
-		$conexion = obtenerConexion();
-
-        if ($conexion)
-        {
-
-
-		mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
-
-		if ($idUsuario!=0)
-        {
-            if ($idGym!=0){
-                $sql= "SELECT SR_ID, Orden, IdRutina, Nombre
-                        FROM Subrutina WHERE idRutina =
-                            (SELECT R_ID FROM Rutina WHERE Estatus =1 AND id_Socio =
-                                (SELECT So_Id FROM UsuarioGimnasio JOIN Socio ON UG_Id = Id_UsuarioGym WHERE
-                                UsuarioGimnasio.Estatus =1 AND Socio.Estatus =1 AND IdUsuario =$idUsuario AND IdGym =$idGym LIMIT 1 )
-                            ORDER BY FechaInicio DESC  LIMIT 1 )
-                        ORDER BY Orden
-                        ";
-
-                if($result = mysqli_query($conexion, $sql))
-                {
-                    if($result!=null){
-                        if ($result->num_rows>0){
-
-                            $response["subrutinas"] = array();
-                            while($row = mysqli_fetch_array($result))
-                            {
-                                $item = array();
-                                $item["Id"]=$row["SR_ID"];
-                                $item["Orden"]=$row["Orden"];
-                                $item["IdRutina"]=$row["IdRutina"];
-                                $item["Nombre"]=$row["Nombre"];
-                                $detalleSubrutina=$this->getDetalleSubrutina($item["Id"]);
-                                $item["Ejercicios"]=$detalleSubrutina;
-                                array_push($response["subrutinas"], $item);
-                            }
-                            $response["success"]=0;
-                            $response["message"]='Consulta exitosa';
-                        }
-                        else{
-                            $response["success"]=1;
-                            $response["message"]='No se encontró una rutina para el usuario y gimnasio indicado';
-                        }
-
-                    }
-                    else
-                        {
-                            $response["success"]=1;
-                            $response["message"]='No se encontró una rutina para el usuario y gimnasio indicado';
-                        }
-                }
-                else
-                {
-                    $response["success"]=4;
-                    $response["message"]='Se presento un error al ejecutar la consulta';
-                }
-
-            }
-            else
-            {
-                $response["success"]=5;
-                $response["message"]='El id del gimnasio debe ser diferente de cero';
-
-            }
-        }
-		else
-		{
-            $response["success"]=6;
-            $response["message"]='El id del usuario debe ser diferente de cero';
-
-		}
-		desconectar($conexion); //desconectamos la base de datos
-        }
-         else
-         {
-          $response["success"]=3;
-          $response["message"]='Se presentó un error en la conexión con la base de datos';
-         }
-		return ($response); //devolvemos el array
-
-    }
-
-    //***********************************************************************************************************************************
-
-    function getSerieByEjercicioSubrutina($idEjercicio){
-        //Creamos la conexión con la función anterior
-		$conexion = obtenerConexion();
-
-        if ($conexion){
-
-
-		mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
-
-		if ($idEjercicio!=0)
-		{
-			$sql= "SELECT NumeroSerie, ( SELECT ts.Nombre FROM TipoSerie ts WHERE ts.TSr_ID = s.id_TipoSerie ) AS TipoSerie,
-                            Repeticiones, PesoPropuesto,
-                            (SELECT Abreviatura FROM UnidadesPeso up WHERE up.UP_ID = s.TipoPeso ) AS TipoPeso, Observaciones FROM Serie s
-                    WHERE id_SubrutinaEjercicio =$idEjercicio;";
-
-            if($result = mysqli_query($conexion, $sql))
-            {
-                if($result!=null){
-                    if ($result->num_rows>0){
-
-                        $response["series"] = array();
-                        while($row = mysqli_fetch_array($result))
-                        {
-                            $item = array();
-                            $item["NumeroSerie"]=$row["NumeroSerie"];
-                            if ($item["NumeroSerie"]==NULL){$item["NumeroSerie"]=0;}
-
-                            $item["TipoSerie"]=$row["TipoSerie"];
-                            if ($item["TipoSerie"]==NULL){$item["TipoSerie"]='';}
-
-                            $item["Repeticiones"]=$row["Repeticiones"];
-                            if ($item["Repeticiones"]==NULL){$item["Repeticiones"]=0;}
-
-                            $item["PesoPropuesto"]=$row["PesoPropuesto"];
-                            if ($item["PesoPropuesto"]==NULL){$item["PesoPropuesto"]=0;}
-
-                            $item["TipoPeso"]=$row["TipoPeso"];
-                            if ($item["TipoPeso"]==NULL){$item["TipoPeso"]='';}
-
-                            $item["Observaciones"]=$row["Observaciones"];
-                            if ($item["Observaciones"]==NULL){$item["Observaciones"]='';}
-
-                        array_push($response["series"], $item);
-                        }
-                        $response["success"]=0;
-                        $response["message"]='Consulta exitosa';
-                    }
-                    else{
-                        $response["success"]=1;
-                        $response["message"]='El ejercicio no tiene series definidas';
-                    }
-
-                }
-                else
-                    {
-                        $response["success"]=1;
-                        $response["message"]='El ejercicio no tiene series definidas';
-                    }
-            }
-            else
-            {
-                $response["success"]=4;
-                $response["message"]='Se presento un error al ejecutar la consulta';
-            }
-
-        }
-		else
-		{
-                $response["success"]=5;
-                $response["message"]='El id de la subrutina debe ser diferente de cero';
-		}
-		desconectar($conexion); //desconectamos la base de datos
-        }
-        else
-        {
-            $response["success"]=3;
-            $response["message"]='Se presentó un error en la conexión con la base de datos';
-        }
-		return ($response); //devolvemos el array
-    }
+                                        //Si se ejecutó correctamente la duplicidad de los ejercicios de cárdio, procedemos con la duplicidad de los ejercicios de pesas
+                                        $sqlPesa="SELECT SEP_ID, Id_Subrutina, Id_EjercicioPeso, Circuito, TiempoDescansoEntreSerie, Observaciones, Orden
+                                        FROM SubRutinaEjercicioPeso where Id_Subrutina=$idSubrutinaOrigen ;"; //Ya que necesitamos obtener el id de cada registro ingresado, vamos a proceder a recorrer cada ejercicio de pesas de la serie, para irlos registrando.
 
 
 
+                                        if($resultPesa = mysqli_query($conexion, $sqlPesa)){
 
-    function getDetalleSubrutina ($idSubrutina){// Esta función nos regresa el detalle de ejercicios contenidos en una subrutina
-		//Creamos la conexión con la función anterior
-		$conexion = obtenerConexion();
+                                            while($rowPesa = mysqli_fetch_array($resultPesa)) //Recorremos cada uno de los ejercicios de pesas, para proceder a dar de alta cada registro.
+                                            {
+                                                $idEjercicioPesasOrigen=$rowPesa["SEP_ID"];
+                                                $idSubrutinaPesas=$rowPesa["Id_Subrutina"];
+                                                $ejercicioPesas=$rowPesa["Id_EjercicioPeso"];
+                                                $circuitoPesas=$rowPesa["Circuito"];
+                                                if ($circuitoPesas==NULL or $circuitoPesas==""){$circuitoPesas=0;}
 
-        if ($conexion){
+                                                $tiempoDescansoEntreSerie=$rowPesa["TiempoDescansoEntreSerie"];
+                                                if ($tiempoDescansoEntreSerie==NULL or $tiempoDescansoEntreSerie==''){$tiempoDescansoEntreSerie=0;}
 
+                                                $observacionesPesas=$rowPesa["Observaciones"];
 
+                                                $ordenPesas=$rowPesa["Orden"];
+                                                if($ordenPesas==NULL or $ordenPesas==''){$ordenPesas=0;}
 
-            mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
+                                                $sqlPesas2="INSERT INTO `SubRutinaEjercicioPeso` (`Id_Subrutina`, `Id_EjercicioPeso`, `Circuito`, `TiempoDescansoEntreSerie`, `Observaciones`, `Orden`)
+                                                VALUES ('$idSubrutinaNueva', '$ejercicioPesas', '$circuitoPesas', '$tiempoDescansoEntreSerie', '$observacionesPesas', '$ordenPesas');";
 
-            if ($idSubrutina!=0)
-            {
+                                                if($resultPesas2 = mysqli_query($conexion, $sqlPesas2)){ // Ejecutamos la consulta, para insertar los ejecicios de pesas
+                                                    $idEjercicioPesas=mysqli_insert_id($conexion); //Obtenemos el id del registro de pesas
+                                                    //Una vez que registramos el ejercicio de pesas, procedemos a duplicar las series
 
-                    $sql= "(SELECT sec.SEC_ID as ID, sec.Orden, sec.Id_EjercicioCardio as IdEjercicio,
-                            e.Explicacion as NombreEjercicio,
-                            sc.Alias as AliasEjercicio,
-                            e.CodigoImagen1,
-                            e.CodigoImagen2,
-                            e.ImagenGenerica1,
-                            e.ImagenGenerica2,
-                            e.TipoFuenteImagen,
-                            0 as Circuito,
-                            0 as TiempoDescansoEntreSerie,
-                            0 as NumeroSeries,
-                            0 as Repeticiones,
-                            0 as PesoPropuesto,
-                            0 AS UnidadPeso,
-                            sec.TiempoTotal,
-                            sec.VelocidadPromedio,
-                            (select abreviatura from UnidadesVelocidad where UV_ID= sec.TipoDeVelocidad) as UnidadVelocidad,
-                            sec.DistanciaTotal,
-                            (select Abreviatura from UnidadesDistancia where UD_ID= sec.TipoDistancia) as UnidadDistancia,
-                            sec.RitmoCardiaco, sec.Nivel, sec.Observaciones, 0 as TiempoDescansoEntreSerie,
-                            1 as TipoDeEjercicio
-                        FROM SubRutinaEjercicioCardio sec JOIN SucursalEjercicioCardio sc on sec.Id_EjercicioCardio=sc.SEC_ID
-                        join EjercicioCardio e on sc.Id_EjercicioCardio=e.EC_ID
-                        where Id_Subrutina=$idSubrutina)
-                        UNION ALL
-                        (Select sep.SEP_ID as ID, sep.Orden, sep.Id_EjercicioPeso as IdEjercicio,
-							p.Explicacion as NombreEjercicio,
-                            sp.Alias as AliasEjercicio,
-                            p.CodigoImagen1,
-                            p.CodigoImagen2,
-                            p.ImagenGenerica1,
-                            p.ImagenGenerica2,
-                            p.TipoFuenteImagen,
-                            Circuito,
-                            TiempoDescansoEntreSerie,
-                            (SELECT COUNT(Sr_ID) FROM Serie where id_SubrutinaEjercicio=sep.SEP_ID) as NumeroSeries,
-                            (Select group_concat(Repeticiones) as Repeticiones FROM Serie where id_SubrutinaEjercicio=sep.SEP_ID) as Repeticiones,
-                            (Select group_concat(DISTINCT PesoPropuesto) as PesoPropuesto FROM Serie where id_SubrutinaEjercicio=sep.SEP_ID) as PesoPropuesto,
-                            (SELECT u.Abreviatura FROM Serie s join UnidadesPeso u ON s.TipoPeso=u.UP_ID where id_SubrutinaEjercicio=sep.SEP_ID LIMIT 1) AS UnidadPeso,
-                            0 as TiempoTotal, 0 as VelocidadPromedio, 0 as UnidadVelocidad, 0 as DistanciaTotal, 0 as UnidadDistancia , 0 as RitmoCardiaco, 0 as Nivel, Observaciones, TiempoDescansoEntreSerie,
-                            2 as TipoDeEjercicio
+                                                    $sqlSeries="INSERT INTO Serie
+                                                    (SELECT NULL as Sr_ID, NumeroSerie, Repeticiones, id_TipoSerie, PesoPropuesto, '$idEjercicioPesas' as id_SubrutinaEjercicio, Observaciones, TipoPeso
+                                                    FROM Serie where id_SubrutinaEjercicio=$idEjercicioPesasOrigen);";
 
-                    from SubRutinaEjercicioPeso sep JOIN SucursalEjercicioPesa sp on sep.id_EjercicioPeso=sp.SEP_ID
-                        join EjercicioPesa p on sp.id_EjercicioPesa=p.EP_ID
-                    where Id_Subrutina=$idSubrutina
-                    )
-                    order by Orden";
+                                                    if ($resultSeries=mysqli_query($conexion, $sqlSeries)){ //Ejecutamos la consulta para duplicar las diferentes series del ejercicio
 
-                    if($result = mysqli_query($conexion, $sql))
-                    {
-                        if($result!=null){
-                            if ($result->num_rows>0){
+                                                    }
+                                                    else{
+                                                        $seDuplicoTodo=0;
+                                                        $response["success"]=8;
+                                                        $response["message"]='Se presentó un error al duplicar las series del ejercicio: '.$idEjercicioPesasOrigen." ";
+                                                        /* Revertir */
+                                                        mysqli_rollback($conexion);
+                                                    }
 
-                                $response["ejercicios"] = array();
-                                $bandera=TRUE;
-                                while($row = mysqli_fetch_array($result))
-                                {
-                                    $item = array();
-                                    $item["ID"]=$row["ID"];
+                                                }
+                                                else{
+                                                    $seDuplicoTodo=0;
+                                                    $response["success"]=8;
+                                                    $response["message"]='Se presentó un error al duplicar el ejercicio con id: '.$idEjercicioPesasOrigen." ";
+                                                    /* Revertir */
+                                                    echo "La consulta que falló es la: ".$sqlPesas2.' ******';
+                                                    mysqli_rollback($conexion);
+                                                }
 
-                                    $item["Orden"]=$row["Orden"];
-                                    if ($item["Orden"]==NULL){$item["Orden"]=0;}
-
-                                    $item["IdEjercicio"]=$row["IdEjercicio"];
-                                    if ($item["IdEjercicio"]==NULL){$item["IdEjercicio"]=0;}
-
-                                    $item["NombreEjercicio"]=$row["NombreEjercicio"];
-                                    if ($item["NombreEjercicio"]==NULL){$item["NombreEjercicio"]='';}
-
-                                    $item["AliasEjercicio"]=$row["AliasEjercicio"];
-                                    if ($item["AliasEjercicio"]==NULL){$item["AliasEjercicio"]='';}
-
-                                    $item["CodigoImagen1"]=$row["CodigoImagen1"];
-                                    if ($item["CodigoImagen1"]==NULL){$item["CodigoImagen1"]=0;}
-
-                                    $item["CodigoImagen2"]=$row["CodigoImagen2"];
-                                    if ($item["CodigoImagen2"]==NULL){$item["CodigoImagen2"]=0;}
-
-                                    $item["ImagenGenerica1"]=$row["ImagenGenerica1"];
-                                    if ($item["ImagenGenerica1"]==NULL){$item["ImagenGenerica1"]='';}
-
-                                    $item["ImagenGenerica2"]=$row["ImagenGenerica2"];
-                                    if ($item["ImagenGenerica2"]==NULL){$item["ImagenGenerica2"]='';}
-
-                                    $item["TipoFuenteImagen"]=$row["TipoFuenteImagen"];
-                                    if ($item["TipoFuenteImagen"]==NULL){$item["TipoFuenteImagen"]='';}
-
-                                    $item["Circuito"]=$row["Circuito"];
-                                    if ($item["Circuito"]==NULL){$item["Circuito"]=0;}
-
-                                    //********************************************************
-                                    if ($item["Circuito"]==0)
-                                    {
-                                        if ($bandera)
-                                        {
-                                            $item["CircuitoColor"]=0;
+                                            }
                                         }
-                                        else
-                                        {
-                                            $item["CircuitoColor"]=1;
+                                        else{
+                                                $seDuplicoTodo=0;
+                                                $response["success"]=8;
+                                                $response["message"]='Se presentó un error al consultar los ejercicios de pesas de la subrutina con Id: '.$idSubrutinaOrigen." ";
+                                                /* Revertir */
+                                                 mysqli_rollback($conexion);
                                         }
-                                        $bandera=!$bandera;
+
                                     }
-                                    else
-                                    {
-                                        $item["CircuitoColor"]=$item["Circuito"]+1;
-                                    }
-
-                                    //********************************************************
-
-                                    $item["TiempoDescansoEntreSerie"]=$row["TiempoDescansoEntreSerie"];
-                                    if ($item["TiempoDescansoEntreSerie"]==NULL){$item["TiempoDescansoEntreSerie"]=0;}
-
-
-                                    $item["NumeroSeries"]=$row["NumeroSeries"];
-                                    if ($item["NumeroSeries"]==NULL){$item["NumeroSeries"]=0;}
-
-                                    $item["Repeticiones"]=$row["Repeticiones"];
-                                    if ($item["Repeticiones"]==NULL){$item["Repeticiones"]=0;}
-
-                                    $item["PesoPropuesto"]=$row["PesoPropuesto"];
-                                    if ($item["PesoPropuesto"]==NULL){$item["PesoPropuesto"]=0;}
-                                    if ($item["PesoPropuesto"]==0){$item["PesoPropuesto"]=''}
-
-                                    $item["UnidadPeso"]=$row["UnidadPeso"];
-                                    if ($item["UnidadPeso"]==NULL){$item["UnidadPeso"]=0;}
-                                    if ($item["UnidadPeso"]==0){$item["UnidadPeso"]=''}
-
-                                    $item["TiempoTotal"]=$row["TiempoTotal"];
-                                    if ($item["TiempoTotal"]==NULL){$item["TiempoTotal"]=0;}
-
-                                    $item["VelocidadPromedio"]=$row["VelocidadPromedio"];
-                                    if ($item["VelocidadPromedio"]==NULL){$item["VelocidadPromedio"]=0;}
-
-                                    $item["UnidadVelocidad"]=$row["UnidadVelocidad"];
-                                    if ($item["UnidadVelocidad"]==NULL){$item["UnidadVelocidad"]='';}
-
-
-
-                                    $item["DistanciaTotal"]=$row["DistanciaTotal"];
-                                    if ($item["DistanciaTotal"]==NULL){$item["DistanciaTotal"]=0;}
-
-                                    $item["UnidadDistancia"]=$row["UnidadDistancia"];
-                                    if ($item["UnidadDistancia"]==NULL){$item["UnidadDistancia"]='';}
-
-
-
-                                    $item["RitmoCardiaco"]=$row["RitmoCardiaco"];
-                                    if ($item["RitmoCardiaco"]==NULL){$item["RitmoCardiaco"]=0;}
-
-                                    $item["Nivel"]=$row["Nivel"];
-                                    if ($item["Nivel"]==NULL){$item["Nivel"]=0;}
-
-                                    $item["Observaciones"]=$row["Observaciones"];
-                                    if ($item["Observaciones"]==NULL){$item["Observaciones"]='';}
-
-                                    $item["TipoDeEjercicio"]=$row["TipoDeEjercicio"];
-                                    if ($item["TipoDeEjercicio"]==NULL){$item["TipoDeEjercicio"]=0;}
-                                    //****************************************************
-
-                                    if ($item["TipoDeEjercicio"]==2){ //Si es un ejercicio de pesas, hay que agregar las
-                                        $Series=array();
-                                        $Series=$this->getSerieByEjercicioSubrutina( $item["ID"]);
-                                        $item["Series"]=$Series;
+                                    else{
+                                        $seDuplicoTodo=0;
+                                        $response["success"]=7;
+                                        $response["message"]='Se presentó un error al duplicar los ejercicios de cardio de la subrutina con Id: '.$idSubrutinaOrigen." ";
+                                        /* Revertir */
+                                        mysqli_rollback($conexion);
                                     }
 
-                                    //****************************************************
-                                    array_push($response["ejercicios"], $item);
+
                                 }
+                                else{
+                                    $seDuplicoTodo=0;
+                                    $response["success"]=6;
+                                    $response["message"]='Se presentó un error al duplicar la subrutina con Id: '.$idSubrutinaOrigen." ";
+                                    /* Revertir */
+                                    mysqli_rollback($conexion);
+                                }
+
+                            }
+
+                            if ($seDuplicoTodo==1){
+                                mysqli_commit($conexion);
                                 $response["success"]=0;
-                                $response["message"]='Consulta exitosa';
+                                $response["message"]='Rutina clonada correctamente';
                             }
-                            else{
-                                $response["success"]=1;
-                                $response["message"]='No se encontró detalle de la subrutina indicada';
-                            }
-
                         }
-                        else
-                            {
-                                $response["success"]=1;
-                                $response["message"]='No se encontró detalle de la subrutina indicada';
-                            }
-                    }
-                    else
-                    {
-                        $response["success"]=4;
-                        $response["message"]='Se presento un error al ejecutar la consulta';
-                    }
+                        else{
 
-            }
-            else
-            {
-                $response["success"]=5;
-                $response["message"]='El id de la subrutina debe ser diferente de cero';
+                            $response["success"]=5;
+                            $response["message"]='Se presentó un error al consultar los días de la rutina (subrutinas)';
+                            /* Revertir */
+                            mysqli_rollback($conexion);
+                        }
+                        }
+                        else{
 
-            }
-            desconectar($conexion); //desconectamos la base de datos
+                            $response["success"]=4;
+                            $response["message"]='Se presentó un error al duplicar la rutina';
+                            /* Revertir */
+                            mysqli_rollback($conexion);
+                        }
         }
         else
         {
             $response["success"]=3;
-            $response["message"]='Se presentó un error en la conexión con la base de datos';
-        }
-		return ($response); //devolvemos el array
+            $response["message"]='Se presento un error al realizar la conexión';
 
+        }
+        return $response;
     }
+
 
 
 }
 
-     $Rutina = new Subrutina();
-     $RutinaR=$Rutina->getSubRutinaByIdIdUIdGymCompleta(1,1);
-     echo json_encode ($RutinaR);
+  $Rutina = new Rutina();
+  $RutinaR=$Rutina->duplicarRutina(1,7,'2016-04-08',4,'',1);
+  echo json_encode ($RutinaR);
 
 
 ?>

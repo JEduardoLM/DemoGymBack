@@ -40,21 +40,21 @@
 
 
 
-	     $metodoBl="actualizarSucursalSocio";
-         //$idUsuarioBl='8';
-         //$idGimnasioBl='2';
-         $idSocioBl=7;
-         //$idRutinaBl=3;
-         //$idSucursalBl=3;
+	    //$metodoBl="actualizarSucursalSocio";
+        //$idUsuarioBl='8';
+        //$idGimnasioBl='2';
+        //$idSocioBl=7;
+        //$idRutinaBl=3;
+        //$idSucursalBl=3;
 
         //$IdSerieBl=1;
         //$PesoNuevoBl=100;
         //$TipoPesoBl=1;
         //$idEjercicioBl=1;
         //$circuitoColorBl=0;
-        $idUsuarioGymBl=7;
-        $idSucursalBl=2;
-        $estatusBl=1;
+        //$idUsuarioGymBl=7;
+        //$idSucursalBl=2;
+        //$estatusBl=1;
 
 
 	function getUsuarioGymByIDU($idUsuario){
