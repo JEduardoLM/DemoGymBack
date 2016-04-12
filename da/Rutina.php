@@ -28,8 +28,8 @@ class Rutina{
                             $item["NumeroSemanas"]=$row["NumeroSemanas"];
                             $item["Estatus"]=$row["Estatus"];
                             $item["Objetivo"]=$row["Objetivo"];
-                            $item["id_Socio"]=$row["id_Socio"];
-                            $item["id_Instructor"]=$row["id_Instructor"];
+                            $item["IdSocio"]=$row["id_Socio"];
+                            $item["IdInstructor"]=$row["id_Instructor"];
 
                             array_push($response["Rutina"], $item);
                         }
@@ -160,7 +160,7 @@ class Rutina{
                                                     }
                                                     else{
                                                         $seDuplicoTodo=0;
-                                                        $response["success"]=8;
+                                                        $response["success"]=10;
                                                         $response["message"]='Se presentó un error al duplicar las series del ejercicio: '.$idEjercicioPesasOrigen." ";
                                                         /* Revertir */
                                                         mysqli_rollback($conexion);
@@ -169,10 +169,9 @@ class Rutina{
                                                 }
                                                 else{
                                                     $seDuplicoTodo=0;
-                                                    $response["success"]=8;
+                                                    $response["success"]=9;
                                                     $response["message"]='Se presentó un error al duplicar el ejercicio con id: '.$idEjercicioPesasOrigen." ";
                                                     /* Revertir */
-                                                    echo "La consulta que falló es la: ".$sqlPesas2.' ******';
                                                     mysqli_rollback($conexion);
                                                 }
 
@@ -232,19 +231,90 @@ class Rutina{
         else
         {
             $response["success"]=3;
-            $response["message"]='Se presento un error al realizar la conexión';
+            $response["message"]='Se presentó un error al realizar la conexión';
 
         }
         return $response;
     }
 
+    //********************************************************************************************************************
+    //********************************************************************************************************************
+    //********************************************************************************************************************
 
+    function getRutinasGenericasBySucursal($idSucursal){ //Este método nos va a permitir obtener las rutinas genericas de una sucursal
+
+        //Creamos la conexión
+		$conexion = obtenerConexion();
+
+        if ($conexion){ //Verificamos si la conexión se realizó correctamente
+
+		mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
+        //Procedemos a armar la consulta, para obtener las rutinas genericas de una sucursal
+
+		$sql= "SELECT R_ID, Nombre, Estatus, Objetivo, id_Sucursal, id_Instructor FROM Rutina where id_Sucursal=$idSucursal";
+
+            if($result = mysqli_query($conexion, $sql)) //Ejecutamos la consulta
+            {
+                if($result!=null){
+                    if ($result->num_rows>0){
+
+                        $response["Rutinas"] = array();
+                        while($row = mysqli_fetch_array($result))
+                        {
+                            $item = array();
+                            $item["R_ID"]=$row["R_ID"];
+                            $item["Nombre"]=$row["Nombre"];
+                            $item["Estatus"]=$row["Estatus"];
+
+                            $item["Objetivo"]=$row["Objetivo"];
+                            if ($item["Objetivo"]==NULL){$item["Objetivo"]='';}
+
+                            $item["id_Sucursal"]=$row["id_Sucursal"];
+
+
+                            $item["id_Instructor"]=$row["id_Instructor"];
+                            if ($item["id_Instructor"]==NULL){$item["id_Instructor"]=0;}
+
+                            array_push($response["Rutinas"], $item);
+                        }
+                        $response["success"]=0;
+                        $response["message"]='Consulta exitosa';
+                    }
+                    else{
+                        $response["success"]=1;
+                        $response["message"]='No existen rutinas registradas para la sucursa indicada';
+                    }
+
+                }
+                else
+                    {
+                        $response["success"]=1;
+                        $response["message"]='No existen rutinas registradas para la sucursa indicada';
+                    }
+            }
+            else
+            {
+                $response["success"]=4;
+                $response["message"]='Se presento un error al ejecutar la consulta';
+            }
+
+
+		desconectar($conexion); //desconectamos la base de datos
+        }
+    else
+    {
+        $response["success"]=3;
+        $response["message"]='Se presento un error al realizar la conexión';
+
+    }
+		return ($response); //devolvemos el array
+    }
 
 }
 
- // $Rutina = new Rutina();
- // $RutinaR=$Rutina->duplicarRutina(1,2,'2016-04-08',4,'',1);
- // echo json_encode ($RutinaR);
+  //$Rutina = new Rutina();
+  //$RutinaR=$Rutina->getRutinasGenericasBySucursal(2);
+  //echo json_encode ($RutinaR);
 
 
 ?>
