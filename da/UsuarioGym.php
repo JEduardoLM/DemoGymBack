@@ -19,7 +19,7 @@ class UsuarioGym{
             {
                 $sql="SELECT UG_Id, IdGym, Gimnasio.Nombre as NombreGimnasio, IdUsuario, UsuarioGimnasio.Estatus, IdRol, Rol.Nombre as NombreRol
                 FROM UsuarioGimnasio join Gimnasio on UsuarioGimnasio.IdGym=Gimnasio.G_Id  join  Rol on UsuarioGimnasio.idRol=Rol.R_Id
-                where IdUsuario='$idUsuario'";
+                where IdUsuario='$idUsuario' and UsuarioGimnasio.Estatus>0";
             }
             else
             {

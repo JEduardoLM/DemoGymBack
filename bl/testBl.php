@@ -1,386 +1,237 @@
 <?php
 
-
 	// JELM
-	// 08/02/2016
-	// Creación de archivo PHP, el cual permite obtener la información de un socio especifico:
-    // Id del socio
-    // Rutina
-    // Subrutina
+	// 08/04/2016
+	// Creación de archivo PHP, el cual permite ingresar a las funcionalidades de la aplicación FORZA Instructor
 
 	$data = json_decode(file_get_contents('php://input'), true);  //Recibimos un objeto json por medio del método POST, y lo decodificamos
 
-	require('../da/UsuarioGym.php'); //Se requiere el archivo de acceso a la base de datos
-    require('../da/Socio.php'); //Se requiere el archivo de acceso a la base de datos
-    require('../da/Rutina.php'); //Se requiere el archivo de acceso a la base de datos
-    require('../da/Subrutina.php'); //Se requiere el archivo de acceso a la base de datos
-    require('../da/Serie.php'); //Se requiere el archivo de acceso a la base de datos
-  //  require('../da/Gimnasio.php'); //Se requiere el archivo de acceso a la base de datos
-
+    // Se indican los archivos PHP que se utilizarán
+	require('../da/Rutina.php');
+    require('../da/Asesor.php');
 
 	//Extraemos la información del método POST, y lo asignamos a diferentes variables
 	$metodoBl = $data["metodo"];
-	$idUsuarioBl = $data["idUsuario"];
-    $idGimnasioBl = $data["idGimnasio"];
-    $idSocioBl = $data["idSocio"];
-    $idRutinaBl = $data["idRutina"];
-    $idSucursalBl= $data["idSucursal"];
+	$idGimnasioBl = $data["IdGym"];
+    $idUsuarioBl = $data["IdUsuario"];
+    $idSucursalBl = $data["IdSucursal"];
+
+    $idRutinaBl = $data["IdRutina"];
+	$idSocioBl = $data["IdSocio"];
+    $fechaBl = $data["Fecha"];
+    $numeroSemanasBl = $data["NueroSemanas"];
+	$objetivoBl = $data["Objetivo"];
+	$idInstructorBl = $data["IdInstructor"];
 
 
-    $IdSerieBl=$data["IdSerie"];
-    $PesoNuevoBl=$data["PesoNuevo"];
-    $TipoPesoBl=$data["TipoPeso"];
-    $idEjercicioBl=$data["IdEjercicio"];
-    $circuitoColorBl=$data["CircuitoColor"];
 
 
 
-	     $metodoBl="obtenerSociosBySucursal";
-         //$idUsuarioBl='8';
-         //$idGimnasioBl='2';
-         //$idSocioBl=2;
-         //$idRutinaBl=3;
-         $idSucursalBl=3;
-
-        //$IdSerieBl=1;
-        //$PesoNuevoBl=100;
-        //$TipoPesoBl=1;
-        //$idEjercicioBl=1;
-        //$circuitoColorBl=0;
+    $metodoBl="duplicarRutina";
+	//$idGimnasioBl=2;
+    //$idUsuarioBl=5;
+    //$idSucursalBl=2;
+    $idRutinaBl =8;
+	$idSocioBl = 6;
+    $fechaBl = '2016-04-14';
+    $numeroSemanasBl = 4;
+	$objetivoBl = 'Rutina de prueba';
+	$idInstructorBl = 1;
 
 
-	function getUsuarioGymByIDU($idUsuario){
-
-        if ($idUsuario!=NULL){  //Validamos que el id envíado sea diferente de NULO
-
-            if (is_numeric($idUsuario)){
-                $gymsocio = new UsuarioGym();
-                $response= $gymsocio->getUsuarioGymByIDU($idUsuario);
-
-            }
-            else
-            {
-            $response["success"]=5;
-			$response["message"]='El id del usuario debe ser un dato numérico';
-            }
-        }
-        else
-        {
-            $response["success"]=6;
-			$response["message"]='El id del usuario debe ser diferente de NULO';
-        }
-        return $response;
-
-    }
-
-    function getSocioByIdUIdG($idUsuario,$idGym){
-
-        if ($idUsuario!=NULL){  //Validamos que el id envíado sea diferente de NULO
-            if ($idGym!=NULL){
-                if (is_numeric($idUsuario)){
-                    if (is_numeric($idGym)){
-                        $socio = new Socio();
-                        $response= $socio->getSocioByIdUsuarioIdGym($idUsuario,$idGym);
-                    }
-                    else
-                    {
-                        $response["success"]=0;
-                        $response["message"]='El id del gimnasio debe ser un dato numérico';
-                    }
-                }
-                else
-                {
-                    $response["success"]=0;
-                    $response["message"]='El id del usuario debe ser un dato numérico';
-                }
-            }
-            else{
-                $response["success"]=0;
-			     $response["message"]='El id del gimnasio debe ser diferente de NULO';
-            }
-
-        }
-        else
-        {
-            $response["success"]=0;
-			$response["message"]='El id del usuario debe ser diferente de NULO';
-        }
-        return $response;
-    }
-
-    function getRutinaBySocio($idSocio){
-        if ($idSocio!=NULL){  //Validamos que el id envíado sea diferente de NULO
-
-            if (is_numeric($idSocio)){
-                $rutina = new Rutina();
-                $response= $rutina->getRutinaByIdSocio($idSocio);
-
-            }
-            else
-            {
-            $response["success"]=0;
-			$response["message"]='El id del socio debe ser un dato numérico';
-            }
-        }
-        else
-        {
-            $response["success"]=0;
-			$response["message"]='El id del socio debe ser diferente de NULO';
-        }
-        return $response;
-    }
-
-    function getSubrutinasByRutina($idRutina){
-        if ($idRutina!=NULL){  //Validamos que el id envíado sea diferente de NULO
-            if (is_numeric($idRutina)){
-                $subrutina = new subrutina();
-                $response= $subrutina->getsubrutinaByIdRutina($idRutina);
-
-            }
-            else
-            {
-                $response["success"]=0;
-                $response["message"]='El id de la rutina debe ser un dato numérico';
-            }
-        }
-        else
-        {
-            $response["success"]=0;
-			$response["message"]='El id de la rutina debe ser diferente de NULO';
-        }
-        return $response;
-    }
-
-    function getSubrutinasByIdUsuarioIdGym($idUsuario, $idGym)
-    {
-
-        if ($idUsuario!=NULL){  //Validamos que el id envíado sea diferente de NULO
-            if ($idGym!=NULL){
-                if (is_numeric($idUsuario)){
-                    if (is_numeric($idGym)){
-                        $subrutina = new Subrutina();
-                        $response= $subrutina->getSubRutinaByIdIdUsuarioIdGym($idUsuario,$idGym);
-                    }
-                    else
-                    {
-                        $response["success"]=0;
-                        $response["message"]='El id del gimnasio debe ser un dato numérico';
-                    }
-                }
-                else
-                {
-                    $response["success"]=0;
-                    $response["message"]='El id del usuario debe ser un dato numérico';
-                }
-            }
-            else{
-                $response["success"]=0;
-			     $response["message"]='El id del gimnasio debe ser diferente de NULO';
-            }
-
-        }
-        else
-        {
-            $response["success"]=0;
-			$response["message"]='El id del usuario debe ser diferente de NULO';
-        }
-        return $response;
-    }
 
 
-    function getSubrutinasByIdUsuarioIdGymCompleta($idUsuario, $idGym)
-    {
+	//***************************************************************************************************************************************
+	//***************************************************************************************************************************************
+	//**********                          AQUI INICIA LA DEFINICIÓN DE FUNCIONES DE LA APLICACIÓN DEL INSTRUCTOR                  ***********
+	//***************************************************************************************************************************************
+	//***************************************************************************************************************************************
 
-        if ($idUsuario!=NULL){  //Validamos que el id envíado sea diferente de NULO
-            if ($idGym!=NULL){
-                if (is_numeric($idUsuario)){
-                    if (is_numeric($idGym)){
-                        $subrutina = new Subrutina();
-                        $response= $subrutina->getSubRutinaByIdIdUIdGymCompleta($idUsuario,$idGym);
-                    }
-                    else
-                    {
-                        $response["success"]=10;
-                        $response["message"]='El id del gimnasio debe ser un dato numérico';
-                    }
-                }
-                else
-                {
-                    $response["success"]=9;
-                    $response["message"]='El id del usuario debe ser un dato numérico';
-                }
-            }
-            else{
-                $response["success"]=8;
-			     $response["message"]='El id del gimnasio debe ser diferente de NULO';
-            }
+        function validarTextoNulo($Texto,$Valor,$numeroError){
+		if ($Texto!==NULL){
+			if (trim($Texto)!=''){
+				$Rvalidacion["success"]=1;
+			}
+			else{
+				$Rvalidacion["success"]=$numeroError+1;
+				$Rvalidacion["message"]=$Valor.' debe ser diferente de cadena vacia';
+			}
+		}
+		else{
+			$Rvalidacion["success"]=$numeroError;
+			$Rvalidacion["message"]=$Valor.' debe ser diferente de NULO';
+		}
+		return $Rvalidacion;
+	}
 
-        }
-        else
-        {
-            $response["success"]=7;
-			$response["message"]='El id del usuario debe ser diferente de NULO';
-        }
-        return $response;
-    }
+    //***************************************************************************************************************************************
 
-    function AsociarUsuarioAGym($idUsuario, $idGimnasio, $idSucursal){
+	function getAsesorByIdUsuarioIdGym ($idGimnasio, $idUsuario)
+	{
 
-     if ($idUsuario!=NULL and $idUsuario>0){  //Validamos que el id envíado sea diferente de NULO
-            if ($idGimnasio!=NULL and $idGimnasio>0){
-                if ($idSucursal!=NULL and $idSucursal>0){
-                    if (is_numeric($idUsuario)){
-                        if (is_numeric($idGimnasio)){
-                            if (is_numeric($idSucursal)){
+		if ($idGimnasio!=NULL or $idGimnasio!=0){
 
-                                $gym = new Gimnasio();
+            if (is_int($idGimnasio)){
+                if ($idGimnasio>=0){
 
-                                if ($gym->validarSucursalGimnasio($idGimnasio,$idSucursal)==1){
-
-                                $usuarioGym = new UsuarioGym();
-                                $UGS=$usuarioGym->getUsuarioGymByIDU_IDGym($idUsuario, $idGimnasio);
-                                  if ($UGS["message"]=='Consulta exitosa'){
-                                    $response["success"]=13;
-                                    $response["message"]='El usuario ya se encuentra asociado al gimnasio';
+                    //Si el dato de gimnasio se encuentra correctamente, procedemos a validar el id del usuario
+                    if ($idUsuario!=NULL or $idUsuario!=0){
+                            if (is_int($idUsuario)){
+                                    if ($idUsuario>=0){
+                                        $asesor = new Asesor();
+                                        $response = $asesor->getAsesorByIdUsuarioIdGym($idUsuario,$idGimnasio);
                                     }
                                     else{
-
-                                        $socio = new socio();
-                                        $response= $socio->asociarSocioGimnasio($idUsuario, $idGimnasio, $idSucursal);
+                                        $response["success"]=10;
+                                        $response["message"]='El id del usuario no puede ser un valor negativo';
                                     }
                                 }
-                                else
-                                {
-                                $response["success"]=12;
-                                $response["message"]='La sucursal indicada no corresponde al gimnasio';
+                                else {
+                                    $response["success"]=9;
+                                    $response["message"]='El id del usuario debe ser un valor numérico';
                                 }
-
                             }
-                            else
-                            {
-                                $response["success"]=11;
-                                $response["message"]='El id de la sucursal debe ser un dato numérico';
-                            }
+                    else {
+                                    $response["success"]=8;
+                                    $response["message"]='El id del Usuario debe ser diferente de NULO o cero';
+                    }
 
-                        }
-                        else
-                        {
-                            $response["success"]=10;
-                            $response["message"]='El id del gimnasio debe ser un dato numérico';
-                        }
-                    }
-                    else
-                    {
-                        $response["success"]=9;
-                        $response["message"]='El id del usuario debe ser un dato numérico';
-                    }
+
                 }
                 else{
-                    $response["success"]=8;
-			         $response["message"]='El id de la sucursal debe ser diferente de NULO y mayor a cero';
+                    $response["success"]=7;
+                    $response["message"]='El id del gimnasio no puede ser un valor negativo';
                 }
             }
-            else{
-                $response["success"]=7;
-			     $response["message"]='El id del gimnasio debe ser diferente de NULO y mayor a cero';
+            else {
+                $response["success"]=6;
+                $response["message"]='El id del gimnasio debe ser un valor numérico';
             }
-
         }
-        else
-        {
-            $response["success"]=6;
-			$response["message"]='El id del usuario debe ser diferente de NULO y mayor a cero';
+        else {
+                $response["success"]=5;
+                $response["message"]='El id del Gimnasio debe ser diferente de NULO o cero';
         }
-        return $response;
+		return $response;
+	}
 
-}
 
-    function actualizarPesoEnSerie($IdSerie,$PesoNuevo,$TipoPeso,$idEjercicio, $circuitoColor){
+	//***************************************************************************************************************************************
 
-        if ($IdSerie!=NULL and $IdSerie>0 ){
-            $serie= new Serie();
-            $response["Serie"] = $serie->updatePesoEnSerie($IdSerie,$PesoNuevo,$TipoPeso) ;
+	function getRutinasByIdSucursal ($idSucursal)
+	{
 
-            if ($response["Serie"]["success"]==0){
-                $subrutina = new Subrutina();
-                $response["Ejercicio"]=$subrutina->getDetalleEjercicioByID($idEjercicio, $circuitoColor);
-                if ($response["Ejercicio"]["success"]==0){
-                    $response["success"]=0;
-			        $response["message"]='El peso se registró correctamente';
-                }
-                else
-                {
-                     $response["success"]=8;
-			         $response["message"]='El pesos se registró correctamente, pero no se pudo obtener el ejercicio actualizado';
+		if ($idSucursal!=NULL or $idSucursal!=0){
+
+            if (is_int($idSucursal)){
+                if ($idSucursal>=0){
+
+                    $rutina = new Rutina();
+                    $response = $rutina->getRutinasGenericasBySucursal($idSucursal);
+
 
                 }
+                else{
+                    $response["success"]=7;
+                    $response["message"]='El id de la sucursal no puede ser un valor negativo';
+                }
             }
-            else
-            {
-                $response["success"]=7;
-			    $response["message"]='Se presentó un error al almacenar el peso';
-
+            else {
+                $response["success"]=6;
+                $response["message"]='El id de la sucursal debe ser un valor numérico';
             }
+        }
+        else {
+                $response["success"]=5;
+                $response["message"]='El id de la sucursal debe ser diferente de NULO o cero';
+        }
+		return $response;
+	}
 
+
+    //***************************************************************************************************************************************
+
+	function duplicarRutina($idRutina, $idSocio, $fecha, $numeroSemanas, $objetivo, $idInstructor)
+	{
+
+		if ($idRutina!=NULL or $idRutina!=0){
+
+            if (is_int($idRutina)){
+                if ($idRutina>=0){
+
+
+
+
+                    if ($idSocio!=NULL or $idSocio!=0){
+
+                        if (is_int($idSocio)){
+                            if ($idSocio>=0){
+
+                                $rutina = new Rutina();
+                                $response = $rutina->duplicarRutina($idRutina, $idSocio, $fecha, $numeroSemanas, $objetivo, $idInstructor);
+
+
+                            }
+                            else{
+                                $response["success"]=13;
+                                $response["message"]='El id del socio no puede ser un valor negativo';
+                            }
+                        }
+                        else {
+                            $response["success"]=12;
+                            $response["message"]='El id del socio debe ser un valor numérico';
+                        }
+                    }
+                    else {
+                            $response["success"]=11;
+                            $response["message"]='El id del socio debe ser diferente de NULO o cero';
+                    }
+
+
+
+                }
+                else{
+                    $response["success"]=13;
+                    $response["message"]='El id de la rutina no puede ser un valor negativo';
+                }
+            }
+            else {
+                $response["success"]=12;
+                $response["message"]='El id de la rutina debe ser un valor numérico';
+            }
         }
-        else
-        {
-            $response["success"]=6;
-			$response["message"]='El id de la serie debe ser diferente de nulo y mayor a cero';
+        else {
+                $response["success"]=11;
+                $response["message"]='El id de la rutina debe ser diferente de NULO o cero';
         }
-        return $response;
+		return $response;
+	}
+
+    //***************************************************************************************************************************************
+
+    function getRutinaById($idRutina){
+
     }
 
-    function ObtenerSociosBySucursal($idSucursal){
-        if ($idSucursal!=NULL){  //Validamos que el id envíado sea diferente de NULO
-
-            if (is_numeric($idSucursal)){
-                $socio = new Socio();
-                $response= $socio->getSociosBySucursalId($idSucursal);
-
-            }
-            else
-            {
-            $response["success"]=5;
-			$response["message"]='El id de la sucursal debe ser un dato numérico';
-            }
-        }
-        else
-        {
-            $response["success"]=6;
-			$response["message"]='El id de la sucursal debe ser diferente de NULO';
-        }
-        return $response;
-    }
+	//*************************************************************************************************************************************************
+	//*************************************************************************************************************************************************
+	//** AQUI INICIA EL SWICH UTILIZADO PARA MANDAR A LLAMAR A LAS FUNCIONES DEFINIDAS PREVIAMENTE DE ACUERDO A LO INDICADO EN LA VARIABLE $METODO  ***
+	//*************************************************************************************************************************************************
+	//*************************************************************************************************************************************************
 
 	switch ($metodoBl) {
-		case "obtenerGimnasiosDeUsuario": // Mandar cero, para obtener todos los aparatos, o el id del aparatado especifico.
-			$response=getUsuarioGymByIDU($idUsuarioBl);
+		case "getAsesorByIdUsuarioIdGym": // Este método lo utilizaremos para obtener el id del instructor
+			$response=getAsesorByIdUsuarioIdGym($idGimnasioBl,$idUsuarioBl);
 		break;
-		case "obtenerSocioByIdUIdG":
-            $response=getSocioByIdUIdG($idUsuarioBl, $idGimnasioBl);
+
+        case "getRutinasByIdSucursal": // Este método lo utilizaremos para obtener el id del instructor
+			$response=getRutinasByIdSucursal($idSucursalBl);
 		break;
-        case "obtenerRutinaBySocio":
-            $response=getRutinaBySocio($idSocioBl);
+
+        case "duplicarRutina": // Este método lo utilizaremos para obtener el id del instructor
+			$response=duplicarRutina($idRutinaBl, $idSocioBl, $fechaBl, $numeroSemanasBl, $objetivoBl, $idInstructorBl);
 		break;
-        case "ObtenerSubrutinasByRutina":
-            $response=getSubrutinasByRutina($idRutinaBl);
-		break;
-        case "ObtenerSubrutinasByIdU_IdGym":
-            $response=getSubrutinasByIdUsuarioIdGym($idUsuarioBl, $idGimnasioBl);
-		break;
-        case "ObtenerSubrutinasByIdUIdGymCompleta":
-            $response=getSubrutinasByIdUsuarioIdGymCompleta($idUsuarioBl, $idGimnasioBl);
-		break;
-        case "asociarUsuarioAGimnasio":
-            $response=AsociarUsuarioAGym($idUsuarioBl, $idGimnasioBl, $idSucursalBl);
-		break;
-        case "obtenerSociosBySucursal":
-            $response=ObtenerSociosBySucursal($idSucursalBl);
-		break;
-        case "actulizarPesoEnSerie":
-            $response=actualizarPesoEnSerie($IdSerieBl,$PesoNuevoBl,$TipoPesoBl, $idEjercicioBl,$circuitoColorBl);
-		break;
+
 		default:
 		{
 			$response["success"]=2;
@@ -389,9 +240,7 @@
 
 	}
 
-    echo json_encode ($response)
-
-
+	echo json_encode ($response)
 
 
 ?>

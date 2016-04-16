@@ -25,11 +25,21 @@ class Rutina{
                             $item["Id"]=$row["R_ID"];
                             $item["Nombre"]=$row["Nombre"];
                             $item["FechaInicio"]=$row["FechaInicio"];
+                            if($item["FechaInicio"]==NULL){$item["FechaInicio"]=0;}
+
                             $item["NumeroSemanas"]=$row["NumeroSemanas"];
+                            if ($item["NumeroSemanas"]==NULL){$item["NumeroSemanas"]=0;}
+
                             $item["Estatus"]=$row["Estatus"];
+
                             $item["Objetivo"]=$row["Objetivo"];
+                            if ($item["Objetivo"]==NULL){$item["Objetivo"]='';}
+
                             $item["IdSocio"]=$row["id_Socio"];
+                            if ($item["IdSocio"]==NULL){$item["IdSocio"]=0;}
+
                             $item["IdInstructor"]=$row["id_Instructor"];
+                            if ($item["IdInstructor"]==NULL){$item["IdInstructor"]=0;}
 
                             array_push($response["Rutina"], $item);
                         }
@@ -269,11 +279,10 @@ class Rutina{
                             $item["Objetivo"]=$row["Objetivo"];
                             if ($item["Objetivo"]==NULL){$item["Objetivo"]='';}
 
-                            $item["id_Sucursal"]=$row["id_Sucursal"];
+                            $item["IdSucursal"]=$row["id_Sucursal"];
 
-
-                            $item["id_Instructor"]=$row["id_Instructor"];
-                            if ($item["id_Instructor"]==NULL){$item["id_Instructor"]=0;}
+                            $item["IdInstructor"]=$row["id_Instructor"];
+                            if ($item["IdInstructor"]==NULL){$item["IdInstructor"]=0;}
 
                             array_push($response["Rutinas"], $item);
                         }
@@ -310,11 +319,197 @@ class Rutina{
 		return ($response); //devolvemos el array
     }
 
+    //********************************************************************************************************************
+    //********************************************************************************************************************
+    //********************************************************************************************************************
+
+    function getRutinaById($idRutina){
+
+
+        //Creamos la conexión a la base de datos
+		$conexion = obtenerConexion();
+
+        if ($conexion){
+            mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
+
+            //Procedemos a armar la consulta, para obtener la rutina de acuerdo a su id
+            $sql= "SELECT  R_ID, Nombre, FechaInicio, NumeroSemanas, Estatus, Objetivo, id_Socio, id_Sucursal, id_Instructor FROM Rutina where R_ID=$idRutina";
+
+                if($result = mysqli_query($conexion, $sql)) //Ejecutamos la consulta
+                {
+                    if($result!=null){ //Verificamos que no haya regresado Nulo la consulta
+                        if ($result->num_rows>0){
+
+                            while($row = mysqli_fetch_array($result))  //Extraemos los datos del registro (debe ser sólo uno)
+                            {
+                                $item = array();
+                                $item["Id"]=$row["R_ID"];
+                                $item["Nombre"]=$row["Nombre"];
+
+                                $item["FechaInicio"]=$row["FechaInicio"];
+                                if ($item["FechaInicio"]==NULL){$item["FechaInicio"]=0;}
+
+                                $item["NumeroSemanas"]=$row["NumeroSemanas"];
+                                if($item["NumeroSemanas"]==NULL){$item["NumeroSemanas"]=0;}
+
+                                $item["Estatus"]=$row["Estatus"];
+
+                                $item["Objetivo"]=$row["Objetivo"];
+                                if($item["Objetivo"]==NULL){$item["Objetivo"]='';}
+
+                                $item["IdSocio"]=$row["id_Socio"];
+                                if($item["IdSocio"]==NULL){$item["IdSocio"]=0;}
+
+                                $item["IdSucursal"]=$row["id_Sucursal"];
+                                if($item["IdSucursal"]==NULL){$item["IdSucursal"]=0;}
+
+                                $item["IdInstructor"]=$row["id_Instructor"];
+                                if($item["IdInstructor"]==NULL){$item["IdInstructor"]=0;}
+
+                                $response["Rutina"]= $item;
+                            }
+                            $response["success"]=0;
+                            $response["message"]='Consulta exitosa';
+                        }
+                        else{
+                            $response["success"]=1;
+                            $response["message"]='No se encontró la rutina con el id indicado';
+                        }
+
+                    }
+                    else
+                        {
+                            $response["success"]=1;
+                            $response["message"]='No se encontró la rutina con el id indicado';
+                        }
+                }
+                else
+                {
+                    $response["success"]=4;
+                    $response["message"]='Se presento un error al ejecutar la consulta';
+                }
+                desconectar($conexion); //desconectamos la base de datos
+        }
+        else
+        {
+            $response["success"]=3;
+            $response["message"]='Se presentó un error en la conexión con la base de datos';
+        }
+		return ($response); //devolvemos el array
+    }
+
+    //********************************************************************************************************************
+    //********************************************************************************************************************
+    //********************************************************************************************************************
+
+    function saveRutina($R_ID, $nombre, $fechaInicio, $numeroSemanas, $estatus, $objetivo, $id_Socio, $id_Sucursal, $id_Instructor ){
+
+        //Creamos la conexión a la base de datos
+		$conexion = obtenerConexion();
+
+
+
+        if ($conexion){ //Verificamos que la conexión se haya realizado de manera correcta
+
+            mysqli_set_charset($conexion, "utf8"); //Formato de datos utf8
+
+            if ($id_Sucursal==''){
+                $id_Sucursal='NULL';
+            }
+            if ($id_Socio==''){
+                $id_Socio='NULL';
+            }
+            if ($id_Instructor==''){
+                $id_Instructor='NULL';
+            }
+
+            //Procedemos a armar las consultas
+            if($R_ID==NULL or $R_ID==0 or $R_ID==''){
+                $sql= "INSERT INTO `Rutina` (`Nombre`, `FechaInicio`, `NumeroSemanas`, `Estatus`, `Objetivo`, `id_Socio`, `id_Sucursal`, `id_Instructor`)
+                        VALUES ('$nombre', '$fechaInicio', $numeroSemanas, $estatus, '$objetivo', $id_Socio, $id_Sucursal, $id_Instructor);";
+            }
+            else{
+                $sql="UPDATE `Rutina` SET `Nombre`='$nombre', `FechaInicio`='$fechaInicio', `NumeroSemanas`='$numeroSemanas',
+                `Estatus`='$estatus', `Objetivo`='$objetivo', `id_Socio`=$id_Socio, `id_Sucursal`=$id_Sucursal, `id_Instructor`=$id_Instructor  WHERE `R_ID`='$R_ID';";
+            }
+
+                if($result = mysqli_query($conexion, $sql)) //Ejecutamos la consulta
+                {
+                            if ($R_ID==NULL or $R_ID==0 or $R_ID==''){
+                                $R_ID=mysqli_insert_id($conexion);
+                            }
+
+                            $response["Rutina"]=$this->getRutinaById($R_ID);
+                            $response["success"]=0;
+                            $response["message"]='Consulta exitosa';
+
+
+
+                }
+                else
+                {
+                    $response["success"]=4;
+                    $response["message"]='Se presento un error al ejecutar la consulta';
+                }
+                desconectar($conexion); //desconectamos la base de datos
+        }
+        else
+        {
+            $response["success"]=3;
+            $response["message"]='Se presentó un error en la conexión con la base de datos';
+        }
+
+		return ($response); //devolvemos el array
+    }
+
+    //********************************************************************************************************************
+    //********************************************************************************************************************
+    //********************************************************************************************************************
+
+    function deleteRutina($R_ID ){
+
+        //Creamos la conexión a la base de datos
+		$conexion = obtenerConexion();
+
+
+
+        if ($conexion){ //Verificamos que la conexión se haya realizado de manera correcta
+
+            mysqli_set_charset($conexion, "utf8"); //Formato de datos utf8
+
+
+            //Procedemos a armar las consultas
+
+                $sql= "DELETE FROM `Rutina` WHERE `R_ID`=$R_ID";
+
+                if($result = mysqli_query($conexion, $sql)) //Ejecutamos la consulta
+                {
+                            $response["success"]=0;
+                            $response["message"]='La rutina se eliminó correctamente';
+                }
+                else
+                {
+                    $response["success"]=4;
+                    $response["message"]='Se presento un error al ejecutar la consulta';
+                }
+                desconectar($conexion); //desconectamos la base de datos
+        }
+        else
+        {
+            $response["success"]=3;
+            $response["message"]='Se presentó un error en la conexión con la base de datos';
+        }
+
+		return ($response); //devolvemos el array
+    }
+
 }
 
-  //$Rutina = new Rutina();
-  //$RutinaR=$Rutina->getRutinasGenericasBySucursal(2);
-  //echo json_encode ($RutinaR);
+   // $Rutina = new Rutina();
+   // $RutinaR=$Rutina->saveRutina(60, 'TEST2', '2015-12-14', 4, 1, 'Objetivos', 1, NULL , 1 );
+   // $RutinaR=$Rutina->getRutinasGenericasBySucursal(2);
+   // $RutinaR=$Rutina->deleteRutina(NULL);
+   // echo json_encode ($RutinaR);
 
 
 ?>

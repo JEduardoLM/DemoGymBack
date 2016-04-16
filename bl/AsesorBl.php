@@ -19,7 +19,7 @@
     $idRutinaBl = $data["IdRutina"];
 	$idSocioBl = $data["IdSocio"];
     $fechaBl = $data["Fecha"];
-    $numeroSemanasBl = $data["NueroSemanas"];
+    $numeroSemanasBl = $data["NumeroSemanas"];
 	$objetivoBl = $data["Objetivo"];
 	$idInstructorBl = $data["IdInstructor"];
 
@@ -46,6 +46,25 @@
 	//**********                          AQUI INICIA LA DEFINICIÓN DE FUNCIONES DE LA APLICACIÓN DEL INSTRUCTOR                  ***********
 	//***************************************************************************************************************************************
 	//***************************************************************************************************************************************
+
+        function validarTextoNulo($Texto,$Valor,$numeroError){
+		if ($Texto!==NULL){
+			if (trim($Texto)!=''){
+				$Rvalidacion["success"]=1;
+			}
+			else{
+				$Rvalidacion["success"]=$numeroError+1;
+				$Rvalidacion["message"]=$Valor.' debe ser diferente de cadena vacia';
+			}
+		}
+		else{
+			$Rvalidacion["success"]=$numeroError;
+			$Rvalidacion["message"]=$Valor.' debe ser diferente de NULO';
+		}
+		return $Rvalidacion;
+	}
+
+    //***************************************************************************************************************************************
 
 	function getAsesorByIdUsuarioIdGym ($idGimnasio, $idUsuario)
 	{
@@ -187,6 +206,12 @@
         }
 		return $response;
 	}
+
+    //***************************************************************************************************************************************
+
+    function getRutinaById($idRutina){
+
+    }
 
 	//*************************************************************************************************************************************************
 	//*************************************************************************************************************************************************
