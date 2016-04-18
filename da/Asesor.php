@@ -31,7 +31,7 @@ class Asesor{
                                     $item["IdUsuarioGym"]=$row["Id_UsuarioGym"];
                                     $item["Estatus"]=$row["Estatus"];
                                     $item["IdRol"]=$row["IdRol"];
-                                    $response["instructor"]= $item;
+                                    $response["asesor"]= $item;
                                 }
                                 $response["success"]=0;
                                 $response["message"]='Consulta exitosa';

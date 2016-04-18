@@ -19,24 +19,24 @@
     $idRutinaBl = $data["IdRutina"];
 	$idSocioBl = $data["IdSocio"];
     $fechaBl = $data["Fecha"];
-    $numeroSemanasBl = $data["NueroSemanas"];
+    $numeroSemanasBl = $data["NumeroSemanas"];
 	$objetivoBl = $data["Objetivo"];
 	$idInstructorBl = $data["IdInstructor"];
 
 
 
 
-
+//  $idRutinaBl, $idSocioBl, $fechaBl, $numeroSemanasBl, $objetivoBl, $idInstructorBl
     $metodoBl="duplicarRutina";
 	//$idGimnasioBl=2;
     //$idUsuarioBl=5;
     //$idSucursalBl=2;
-    $idRutinaBl =8;
-	$idSocioBl = 6;
-    $fechaBl = '2016-04-14';
-    $numeroSemanasBl = 4;
-	$objetivoBl = 'Rutina de prueba';
-	$idInstructorBl = 1;
+    $idRutinaBl =1;
+	$idSocioBl = 5;
+    $fechaBl = 1461202946506;
+    $numeroSemanasBl = 3;
+	$objetivoBl = 'Ponerse mamer';
+	$idInstructorBl = 2;
 
 
 

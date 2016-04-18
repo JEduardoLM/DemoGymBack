@@ -26,17 +26,17 @@
 
 
 
-
-    //$metodoBl="duplicarRutina";
+//  $idRutinaBl, $idSocioBl, $fechaBl, $numeroSemanasBl, $objetivoBl, $idInstructorBl
+    // $metodoBl="duplicarRutina";
 	//$idGimnasioBl=2;
     //$idUsuarioBl=5;
     //$idSucursalBl=2;
     //$idRutinaBl =3;
-	//$idSocioBl = 'asdasd';
-    //$fechaBl = '2015-12-14';
-    //$numeroSemanasBl = 4;
-	//$objetivoBl = NULL;
-	//$idInstructorBl = 1;
+	// $idSocioBl = 5;
+    // $fechaBl = 1461202946506;
+    // $numeroSemanasBl = 3;
+	// $objetivoBl = 'Ponerse mamer';
+	// $idInstructorBl = 2;
 
 
 

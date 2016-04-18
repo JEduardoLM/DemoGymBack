@@ -11,7 +11,8 @@ class Rutina{
 
 		if ($idSocio!=0)
 		{
-			$sql= "SELECT  R_ID, Nombre, FechaInicio, NumeroSemanas, Estatus, Objetivo, id_Socio, id_Instructor FROM Rutina where Estatus=1  and id_Socio=$idSocio order  by FechaInicio desc  LIMIT 1";
+			$sql= "SELECT  R_ID, Nombre, FechaInicio, NumeroSemanas, Estatus, Objetivo, id_Socio, id_Instructor
+                FROM Rutina where Estatus=1  and id_Socio=$idSocio order  by FechaInicio desc  LIMIT 1";
 
             if($result = mysqli_query($conexion, $sql))
             {
@@ -426,7 +427,7 @@ class Rutina{
             //Procedemos a armar las consultas
             if($R_ID==NULL or $R_ID==0 or $R_ID==''){
                 $sql= "INSERT INTO `Rutina` (`Nombre`, `FechaInicio`, `NumeroSemanas`, `Estatus`, `Objetivo`, `id_Socio`, `id_Sucursal`, `id_Instructor`)
-                        VALUES ('$nombre', '$fechaInicio', $numeroSemanas, $estatus, '$objetivo', $id_Socio, $id_Sucursal, $id_Instructor);";
+                        VALUES ('$nombre', '$fechaInicio' , $numeroSemanas, $estatus, '$objetivo', $id_Socio, $id_Sucursal, $id_Instructor);";
             }
             else{
                 $sql="UPDATE `Rutina` SET `Nombre`='$nombre', `FechaInicio`='$fechaInicio', `NumeroSemanas`='$numeroSemanas',
@@ -505,11 +506,15 @@ class Rutina{
 
 }
 
-   // $Rutina = new Rutina();
+    // $Rutina = new Rutina();
    // $RutinaR=$Rutina->saveRutina(60, 'TEST2', '2015-12-14', 4, 1, 'Objetivos', 1, NULL , 1 );
    // $RutinaR=$Rutina->getRutinasGenericasBySucursal(2);
    // $RutinaR=$Rutina->deleteRutina(NULL);
-   // echo json_encode ($RutinaR);
+   //   $RutinaR=$Rutina->getRutinaByIdSocio(2);
+    // $RutinaR=$Rutina->duplicarRutina(2, 1, '2015-12-14', 2, 1, 1);
+    // echo json_encode ($RutinaR);
+
+    // echo date_timestamp_get(1461202946506);
 
 
 ?>

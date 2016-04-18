@@ -2,11 +2,12 @@
 
 require_once('conexion.php');
 require_once('Gimnasio.php');
+require_once('Asesor.php');
 
 class UsuarioGym{
 
 	function getUsuarioGymByIDU($idUsuario){ // Esta función nos regresa todos los registros de usuarioGym, que correspondan a un usuario
-		//Creamos la conexión con la función anterior
+		//Creamos la conexión
 
 		$conexion = obtenerConexion();
 
@@ -45,6 +46,11 @@ class UsuarioGym{
                             $item["IdRol"]=$row["IdRol"];
                             $item["NombreRol"]=$row["NombreRol"];
                             $item["Configuracion"]= $G->getConfiguracionByGymId($item["IdGym"]);
+
+                            if($item["IdRol"]>1){
+                                $A = new Asesor();
+                                $item ["Asesor"]= $A->getAsesorByIdUsuarioIdGym($idUsuario,$item["IdGym"]);
+                            }
                             array_push($response["usuarioGyms"], $item);
                         }
                         $response["success"]=0;
@@ -152,9 +158,9 @@ class UsuarioGym{
 
 }
 
- // $UG = new UsuarioGym();
- // $UGs=$UG->getUsuarioGymByIDU(2);
- // echo json_encode ($UGs);
+  //$UG = new UsuarioGym();
+  //$UGs=$UG->getUsuarioGymByIDU(2);
+  //echo json_encode ($UGs);
 
 
 ?>

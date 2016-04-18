@@ -109,7 +109,10 @@ class Serie{
 		    $sql="UPDATE `Serie` SET `PesoPropuesto`='$NuevoPeso', `TipoPeso`='$TipoDePeso' WHERE `Sr_ID`='$idSerie'";
 
 			if($result = mysqli_query($conexion, $sql)){
-                $hoy = date("Ymd");
+
+                $fecha = new DateTime();
+                $hoy = $fecha->getTimestamp();;
+
                 $sql2="INSERT INTO PesoAvances (`Peso`, `TipoPeso`, `id_Serie`,`Fecha`) VALUES ($NuevoPeso, $TipoDePeso, $idSerie, $hoy)";
 
                 if($result = mysqli_query($conexion, $sql2)){

@@ -173,9 +173,10 @@ function asociarSocioGimnasio($idUsuario, $idGimnasio, $idSucursal){
 
                 $idUsuarioGym=mysqli_insert_id($conexion); //Obtenemos el id del registro insertado
 
-                $hoy = date("Y-m-d");
+                $fecha = new DateTime();
+                $hoy = $fecha->getTimestamp();
 
-                $sql2="INSERT INTO Socio (`Id_Sucursal`, `Id_UsuarioGym`, `FechaIngreso`, `Estatus`) VALUES ($idSucursal, $idUsuarioGym , '$hoy' , '1')";
+                $sql2="INSERT INTO Socio (`Id_Sucursal`, `Id_UsuarioGym`, `FechaIngreso`, `Estatus`) VALUES ($idSucursal, $idUsuarioGym , $hoy , '1')";
 
                 if($result = mysqli_query($conexion, $sql2)){
 
@@ -327,6 +328,7 @@ function actualizarSucursalSocio($idSocio, $idSucursal){
 
 //$UG = new Socio();
 //$UGs=$UG->actualizarSucursalSocio(7,2);
+//$UGs=$UG->asociarSocioGimnasio(1,2,3);
 //echo json_encode ($UGs);
 
 
